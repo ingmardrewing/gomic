@@ -26,7 +26,7 @@ func (o *Output) WriteToFilesystem() {
 }
 
 func (o *Output) writePageToFileSystem(p *page.Page) {
-	absPath := o.config.Rootpath + p.Path()
+	absPath := o.config.Rootpath + p.FSPath()
 	o.prepareFileSystem(absPath)
 	o.writeStringToFS(absPath, p.Html())
 }

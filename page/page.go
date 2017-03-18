@@ -59,13 +59,18 @@ func (p *Page) getNavLink(rel string, label string, linked *Page) string {
 }
 
 func (p *Page) Path() string {
-	return p.servedrootpath + p.path
+	path := p.servedrootpath + p.path
+	return path
+}
+
+func (p *Page) FSPath() string {
+	return p.path
 }
 
 func (p *Page) img() string {
 	if p.next != nil {
 		img := fmt.Sprintf(imageFormat, p.imgUrl)
-		return fmt.Sprintf(imageWrapperFormat, p.next.Path, p.next.title, img)
+		return fmt.Sprintf(imageWrapperFormat, p.next.Path(), p.next.title, img)
 	}
 	return fmt.Sprintf(imageFormat, p.imgUrl)
 }

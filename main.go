@@ -12,7 +12,7 @@ func main() {
 	comic := comic.NewComic(conf.Rootpath)
 
 	for _, pc := range conf.Pages {
-		p := page.NewPage(pc["title"], pc["path"], pc["imgUrl"], pc["servedrootpath"])
+		p := page.NewPage(pc["title"], pc["path"], pc["imgUrl"], conf.Servedrootpath)
 		comic.AddPage(p)
 	}
 
