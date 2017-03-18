@@ -1,11 +1,9 @@
 package output
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
@@ -22,14 +20,13 @@ func NewOutput(comic *comic.Comic, config *config.Config) *Output {
 }
 
 func (o *Output) WriteToFilesystem() {
-	o.cleanRootpath()
 	for _, p := range o.comic.GetPages() {
 		o.writePageToFileSystem(p)
 	}
 }
 
 func (o *Output) writePageToFileSystem(p *page.Page) {
-	absPath := o.config.Rootpath + p.Path
+	absPath := o.config.Rootpath + p.Path()
 	o.prepareFileSystem(absPath)
 	o.writeStringToFS(absPath, p.Html())
 }
@@ -42,12 +39,6 @@ func (o *Output) writeStringToFS(absPath string, html string) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func (o *Output) cleanRootpath() {
-	opt := fmt.Sprintf("-rf %s", o.config.Rootpath)
-	fmt.Println(opt)
-	log.Fatal(exec.Command("rm", opt).Run())
 }
 
 func (o *Output) prepareFileSystem(absPath string) {

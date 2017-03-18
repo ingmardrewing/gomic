@@ -12,9 +12,10 @@ func main() {
 }
 
 type Config struct {
-	Url      string              `yaml:"url"`
-	Rootpath string              `yaml:"rootpath"`
-	Pages    []map[string]string `yaml:"pages"`
+	Url            string              `yaml:"url"`
+	Rootpath       string              `yaml:"rootpath"`
+	Servedrootpath string              `yaml:"servedrootpath"`
+	Pages          []map[string]string `yaml:"pages"`
 }
 
 func NewConfig(yamlPath string) *Config {
