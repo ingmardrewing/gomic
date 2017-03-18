@@ -1,10 +1,6 @@
 package comic
 
-import (
-	"fmt"
-
-	"github.com/ingmardrewing/gomic/page"
-)
+import "github.com/ingmardrewing/gomic/page"
 
 type Comic struct {
 	rootpath string
@@ -30,10 +26,8 @@ func (c *Comic) ConnectPages() {
 	}
 }
 
-func (c *Comic) PrintPages() {
-	for _, p := range c.pages {
-		fmt.Println(p.Html())
-	}
+func (c *Comic) GetPages() []*page.Page {
+	return c.pages
 }
 
 func (c *Comic) pageIndexExists(i int) bool {

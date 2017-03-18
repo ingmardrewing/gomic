@@ -3,7 +3,7 @@ package page
 import "fmt"
 
 type Page struct {
-	title, path, imgUrl     string
+	title, Path, imgUrl     string
 	first, prev, next, last *Page
 }
 
@@ -33,7 +33,7 @@ func (p *Page) meta() string {
 
 func (p *Page) getHeaderLink(rel string, linked *Page) string {
 	if linked != nil {
-		return fmt.Sprintf(headerLinkFormat, rel, linked.title, linked.path)
+		return fmt.Sprintf(headerLinkFormat, rel, linked.title, linked.Path)
 	}
 	return ""
 }
@@ -49,7 +49,7 @@ func (p *Page) navi() string {
 
 func (p *Page) getNavLink(rel string, label string, linked *Page) string {
 	if linked != nil {
-		return fmt.Sprintf(navLinkFormat, rel, linked.title, linked.path, label)
+		return fmt.Sprintf(navLinkFormat, rel, linked.title, linked.Path, label)
 	}
 	return ""
 }
@@ -57,7 +57,7 @@ func (p *Page) getNavLink(rel string, label string, linked *Page) string {
 func (p *Page) img() string {
 	if p.next != nil {
 		img := fmt.Sprintf(imageFormat, p.imgUrl)
-		return fmt.Sprintf(imageWrapperFormat, p.next.path, p.next.title, img)
+		return fmt.Sprintf(imageWrapperFormat, p.next.Path, p.next.title, img)
 	}
 	return fmt.Sprintf(imageFormat, p.imgUrl)
 }
