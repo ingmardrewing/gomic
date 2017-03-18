@@ -1,6 +1,9 @@
 package page
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Page struct {
 	title, path, imgUrl, servedrootpath string
@@ -22,8 +25,17 @@ func (p *Page) SetRels(first *Page, prev *Page, next *Page, last *Page) {
 	p.last = last
 }
 
+func (p *Page) version() string {
+	t := time.Now()
+	return fmt.Sprintf("%d%02d%02dT%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second())
+}
+
 func (p *Page) Html() string {
-	return fmt.Sprintf(htmlFormat, p.title, p.meta(), p.img(), p.navi())
+	return fmt.Sprintf(
+		htmlFormat, p.title, p.meta(),
+		p.version(), p.img(), p.navi())
 }
 
 func (p *Page) meta() string {
@@ -85,6 +97,7 @@ const htmlFormat = `<!doctype html>
 	<head>
 		<title>%s</title>
 		%s
+		<link rel="stylesheet" href="/~drewing/gomic/css/style.css?version=%s" type="text/css">
 	</head>
 	<body>
 		%s
