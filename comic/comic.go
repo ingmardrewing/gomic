@@ -7,16 +7,16 @@ import (
 )
 
 type Comic struct {
-	pages []*page.Page
+	rootpath string
+	pages    []*page.Page
 }
 
-func NewComic() Comic {
+func NewComic(rootpath string) Comic {
 	pages := []*page.Page{}
-	return Comic{pages}
+	return Comic{rootpath, pages}
 }
 
-func (c *Comic) AddPage(title string, url string) {
-	p := page.NewPage(title, url)
+func (c *Comic) AddPage(p *page.Page) {
 	c.pages = append(c.pages, p)
 }
 

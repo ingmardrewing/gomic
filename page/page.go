@@ -3,12 +3,12 @@ package page
 import "fmt"
 
 type Page struct {
-	title, url              string
+	title, path, imgUrl     string
 	first, prev, next, last *Page
 }
 
-func NewPage(title string, url string) *Page {
-	return &Page{title, url, nil, nil, nil, nil}
+func NewPage(title string, path string, imgUrl string) *Page {
+	return &Page{title, path, imgUrl, nil, nil, nil, nil}
 }
 
 func (p *Page) SetRels(first *Page, prev *Page, next *Page, last *Page) {
@@ -33,7 +33,7 @@ func (p *Page) meta() string {
 
 func (p *Page) getHeaderLink(rel string, linked *Page) string {
 	if linked != nil {
-		return fmt.Sprintf(headerLinkFormat, rel, linked.title, linked.url)
+		return fmt.Sprintf(headerLinkFormat, rel, linked.title, linked.path)
 	}
 	return ""
 }
@@ -49,17 +49,17 @@ func (p *Page) navi() string {
 
 func (p *Page) getNavLink(rel string, label string, linked *Page) string {
 	if linked != nil {
-		return fmt.Sprintf(navLinkFormat, rel, linked.title, linked.url, label)
+		return fmt.Sprintf(navLinkFormat, rel, linked.title, linked.path, label)
 	}
 	return ""
 }
 
 func (p *Page) img() string {
 	if p.next != nil {
-		img := fmt.Sprintf(imageFormat, p.url)
-		return fmt.Sprintf(imageWrapperFormat, p.next.url, p.next.title, img)
+		img := fmt.Sprintf(imageFormat, p.imgUrl)
+		return fmt.Sprintf(imageWrapperFormat, p.next.path, p.next.title, img)
 	}
-	return fmt.Sprintf(imageFormat, p.url)
+	return fmt.Sprintf(imageFormat, p.imgUrl)
 }
 
 const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
