@@ -33,9 +33,12 @@ func (p *Page) version() string {
 }
 
 func (p *Page) Html() string {
+	path := p.servedrootpath + "/css/style.css?version=" + p.version()
+	format := `<link rel="stylesheet" href="%s" type="text/css">`
+	csslink := fmt.Sprintf(format, path)
 	return fmt.Sprintf(
 		htmlFormat, p.title, p.meta(),
-		p.version(), p.img(), p.navi())
+		csslink, p.img(), p.navi())
 }
 
 func (p *Page) meta() string {
@@ -97,7 +100,7 @@ const htmlFormat = `<!doctype html>
 	<head>
 		<title>%s</title>
 		%s
-		<link rel="stylesheet" href="/~drewing/gomic/css/style.css?version=%s" type="text/css">
+		%s
 	</head>
 	<body>
 		%s
