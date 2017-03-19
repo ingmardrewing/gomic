@@ -163,7 +163,7 @@ func (h *Html) getHeaderHtml() string {
 	<a href="https://DevAbo.de/" class="home"><!--DevAbo.de--></a>
     <a href="https://devabo.de/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
 	%s
-</header>, `, hl)
+</header>`, hl)
 }
 
 const css = `
