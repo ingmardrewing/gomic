@@ -1,13 +1,9 @@
 package page
 
-import (
-	"fmt"
-	"time"
-)
-
 type Page struct {
 	title, path, imgUrl, servedrootpath string
 	first, prev, next, last             *Page
+	meta, navi                          [][]string
 }
 
 func NewPage(
@@ -15,7 +11,13 @@ func NewPage(
 	path string,
 	imgUrl string,
 	servedrootpath string) *Page {
-	return &Page{title, path, imgUrl, servedrootpath, nil, nil, nil, nil}
+	return &Page{title, path, imgUrl, servedrootpath,
+		nil, nil, nil, nil, [][]string{}, [][]string{}}
+
+}
+
+func (p *Page) Title() string {
+	return p.title
 }
 
 func (p *Page) SetRels(first *Page, prev *Page, next *Page, last *Page) {
@@ -25,52 +27,62 @@ func (p *Page) SetRels(first *Page, prev *Page, next *Page, last *Page) {
 	p.last = last
 }
 
-func (p *Page) version() string {
-	t := time.Now()
-	return fmt.Sprintf("%d%02d%02dT%02d%02d%02d",
-		t.Year(), t.Month(), t.Day(),
-		t.Hour(), t.Minute(), t.Second())
-}
-
-func (p *Page) Html() string {
-	path := p.servedrootpath + "/css/style.css?version=" + p.version()
-	format := `<link rel="stylesheet" href="%s" type="text/css">`
-	csslink := fmt.Sprintf(format, path)
-	return fmt.Sprintf(
-		htmlFormat, p.title, p.meta(),
-		csslink, p.img(), p.navi())
-}
-
-func (p *Page) meta() string {
-	meta := ""
-	meta += p.getHeaderLink("start", p.first)
-	meta += p.getHeaderLink("prev", p.prev)
-	meta += p.getHeaderLink("next", p.next)
-	meta += p.getHeaderLink("last", p.last)
-	return meta
-}
-
-func (p *Page) getHeaderLink(rel string, linked *Page) string {
-	if linked != nil {
-		return fmt.Sprintf(headerLinkFormat, rel, linked.title, linked.Path())
+func (p *Page) fillMeta() {
+	if p.first != nil {
+		p.addMeta("start", p.first.title, p.first.Path())
 	}
-	return ""
-}
-
-func (p *Page) navi() string {
-	n := ""
-	n += p.getNavLink("first", "&lt;&lt; first", p.first)
-	n += p.getNavLink("previous", "&lt; previous", p.prev)
-	n += p.getNavLink("next", "&gt; next", p.next)
-	n += p.getNavLink("last", "&gt;&gt; newest", p.last)
-	return fmt.Sprintf(navWrapperFormat, n)
-}
-
-func (p *Page) getNavLink(rel string, label string, linked *Page) string {
-	if linked != nil {
-		return fmt.Sprintf(navLinkFormat, rel, linked.title, linked.Path(), label)
+	if p.prev != nil {
+		p.addMeta("prev", p.prev.title, p.prev.Path())
 	}
-	return ""
+	if p.next != nil {
+		p.addMeta("next", p.next.title, p.next.Path())
+	}
+	if p.last != nil {
+		p.addMeta("last", p.last.title, p.last.Path())
+	}
+}
+
+func (p *Page) addMeta(rel string, title string, path string) {
+	l := []string{rel, title, path}
+	p.meta = append(p.meta, l)
+}
+
+func (p *Page) GetMeta() [][]string {
+	p.fillMeta()
+	return p.meta
+}
+
+func (p *Page) fillNavi() {
+	if p.first != nil {
+		p.addNavi("first", p.first.title, p.first.Path(), "&lt;&lt; first")
+	}
+	if p.prev != nil {
+		p.addNavi("previous", p.prev.title, p.prev.Path(), "&lt; previous")
+	}
+	if p.next != nil {
+		p.addNavi("next", p.next.title, p.next.Path(), "next &gt;")
+	}
+	if p.last != nil {
+		p.addNavi("last", p.last.title, p.last.Path(), "newest &gt;")
+	}
+}
+
+func (p *Page) IsLast() bool {
+	return p.last == nil
+}
+
+func (p *Page) UrlToNext() string {
+	return p.next.Path()
+}
+
+func (p *Page) addNavi(rel string, label string, title string, path string) {
+	n := []string{rel, label, title, path}
+	p.navi = append(p.navi, n)
+}
+
+func (p *Page) GetNavi() [][]string {
+	p.fillNavi()
+	return p.navi
 }
 
 func (p *Page) Path() string {
@@ -78,33 +90,14 @@ func (p *Page) Path() string {
 	return path
 }
 
+func (p *Page) ServedRootPath() string {
+	return p.servedrootpath
+}
+
 func (p *Page) FSPath() string {
 	return p.path
 }
 
-func (p *Page) img() string {
-	if p.next != nil {
-		img := fmt.Sprintf(imageFormat, p.imgUrl)
-		return fmt.Sprintf(imageWrapperFormat, p.next.Path(), p.next.title, img)
-	}
-	return fmt.Sprintf(imageFormat, p.imgUrl)
+func (p *Page) Img() string {
+	return p.imgUrl
 }
-
-const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
-const imageFormat = `<img src="%s" width="800" height="1334" alt="">`
-const headerLinkFormat = `<link rel="%s" title="%s" href="%s">`
-const navLinkFormat = `<a rel="%s" title="%s" href="%s">%s</a>`
-const navWrapperFormat = `<nav>%s</nav>`
-const htmlFormat = `<!doctype html>
-<html>
-	<head>
-		<title>%s</title>
-		%s
-		%s
-	</head>
-	<body>
-		%s
-		%s
-	</body>
-</html>
-`
