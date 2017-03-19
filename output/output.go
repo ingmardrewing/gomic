@@ -152,19 +152,30 @@ func (h *Html) getHeaderLink(vals ...string) string {
 	return l
 }
 
+func (h *Html) getHeadline() string {
+	return fmt.Sprintf(`<h3>%s</h3>`, h.p.Title())
+}
+
 func (h *Html) getHeaderHtml() string {
-	return `
+	hl := h.getHeadline()
+	return fmt.Sprintf(`
 <header>
 	<a href="https://DevAbo.de/" class="home"><!--DevAbo.de--></a>
     <a href="https://devabo.de/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
-</header>
-	`
+	%s
+</header>, `, hl)
 }
 
 const css = `
 header {
 	width: 800px;
 	margin: 0 auto;
+}
+
+h3 {
+	font-family: Arial Black;
+	text-align: left;
+	text-transform: uppercase;
 }
 
 header .home {
