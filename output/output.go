@@ -252,7 +252,7 @@ nav a {
 }
 
 `
-const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
+const imageWrapperFormat = `<a href="%s" rel="next" title="%s">DevAbo.de | Graphic Novel | %s</a>`
 const navWrapperFormat = `<nav>%s</nav>`
 const htmlFormat = `<!doctype html>
 <html>
