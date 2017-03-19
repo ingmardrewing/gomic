@@ -111,8 +111,9 @@ func (h *Html) writePage() string {
 	title := h.p.Title()
 	footerNavi := h.getFooterNavi()
 	content := h.getContent()
+	header := h.getHeaderHtml()
 
-	return fmt.Sprintf(htmlFormat, title, meta, css, content, navi, footerNavi)
+	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, footerNavi)
 }
 
 func (h *Html) getContent() string {
@@ -151,13 +152,55 @@ func (h *Html) getHeaderLink(vals ...string) string {
 	return l
 }
 
+func (h *Html) getHeaderHtml() string {
+	return `
+<header>
+	<a href="https://DevAbo.de/" class="home"><!--DevAbo.de--></a>
+    <a href="https://devabo.de/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
+</header>
+	`
+}
+
 const css = `
+header {
+	width: 800px;
+	margin: 0 auto;
+}
+
+header .home {
+    display: block;
+    line-height: 80px;
+    background: url(https://devabo.de/wp-content/themes/drewing2012/header_devabo_de.png) no-repeat 0px -0px;
+    height: 30px;
+    width: 800px;
+    text-align: left;
+    color: #000;
+    margin-bottom: 0px;
+	margin-top: 0;
+    background-color: transparent;
+}
+header .orange {
+	display: block;
+    height: 2.2em;
+    background-color: #FF8800;
+    color: #FFFFFF;
+    line-height: 1em;
+    padding: 0.5em;
+    box-sizing: border-box;
+	width: 100%;
+    font-size: 24px;
+	font-family: Arial Black;
+	text-transform: uppercase;
+    text-decoration: underline;
+	margin-bottom: 1rem;
+}
+
 body {
 	text-align: center;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	font-famiy: Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 #disqus_thread,
@@ -209,6 +252,7 @@ const htmlFormat = `<!doctype html>
 	</head>
 	<body>
 		<header>
+%s
 		</header>
 		<main>
 			%s
