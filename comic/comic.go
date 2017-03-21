@@ -1,22 +1,39 @@
 package comic
 
-import "github.com/ingmardrewing/gomic/page"
+import (
+	"github.com/ingmardrewing/gomic/config"
+	"github.com/ingmardrewing/gomic/page"
+)
 
 type Comic struct {
 	rootpath string
 	pages    []*page.Page
 }
 
-func NewComic(rootpath string) Comic {
+func (c *Comic) generatePages() {
+	for _, pc := range config.Pages() {
+		p := c.generatePage(pc, config.Servedrootpath())
+		c.AddPage(p)
+	}
+}
+
+func (c *Comic) generatePage(pc map[string]string, servedRootPath string) *page.Page {
+	return page.NewPage(pc["title"], pc["path"], pc["imgUrl"], pc["disqusId"], servedRootPath)
+}
+
+func NewComic() Comic {
 	pages := []*page.Page{}
-	return Comic{rootpath, pages}
+	c := Comic{config.Rootpath(), pages}
+	c.generatePages()
+	c.connectPages()
+	return c
 }
 
 func (c *Comic) AddPage(p *page.Page) {
 	c.pages = append(c.pages, p)
 }
 
-func (c *Comic) ConnectPages() {
+func (c *Comic) connectPages() {
 	for i, p := range c.pages {
 		p.SetRels(
 			c.firstFor(i),

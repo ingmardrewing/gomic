@@ -13,12 +13,11 @@ import (
 )
 
 type Output struct {
-	comic  *comic.Comic
-	config *config.Config
+	comic *comic.Comic
 }
 
-func NewOutput(comic *comic.Comic, config *config.Config) *Output {
-	return &Output{comic, config}
+func NewOutput(comic *comic.Comic) *Output {
+	return &Output{comic}
 }
 
 func (o *Output) WriteToFilesystem() {
@@ -29,14 +28,14 @@ func (o *Output) WriteToFilesystem() {
 }
 
 func (o *Output) writeCss() {
-	p := o.config.Rootpath + "/css"
+	p := config.Rootpath() + "/css"
 	o.prepareFileSystem(p)
 	fp := p + "/style.css"
 	o.writeStringToFS(fp, css)
 }
 
 func (o *Output) writePageToFileSystem(p *page.Page) {
-	absPath := o.config.Rootpath + p.FSPath()
+	absPath := config.Rootpath() + p.FSPath()
 	o.prepareFileSystem(absPath)
 
 	h := NewHtml(p)
@@ -99,7 +98,7 @@ func (h *Html) version() string {
 }
 
 func (h *Html) getCssLink() string {
-	path := h.p.ServedRootPath() + "/css/style.css?version=" + h.version()
+	path := config.Servedrootpath() + "/css/style.css?version=" + h.version()
 	format := `<link rel="stylesheet" href="%s" type="text/css">`
 	return fmt.Sprintf(format, path)
 }
@@ -112,8 +111,9 @@ func (h *Html) writePage() string {
 	footerNavi := h.getFooterNavi()
 	content := h.getContent()
 	header := h.getHeaderHtml()
-
-	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, footerNavi)
+	disqus := h.getDisqus()
+	year := time.Now().Year()
+	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
 }
 
 func (h *Html) getContent() string {
@@ -159,17 +159,39 @@ func (h *Html) getHeadline() string {
 func (h *Html) getHeaderHtml() string {
 	hl := h.getHeadline()
 	return fmt.Sprintf(`
-<header>
 	<a href="https://DevAbo.de/" class="home"><!--DevAbo.de--></a>
     <a href="https://devabo.de/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
-	%s
-</header>`, hl)
+	%s`, hl)
+}
+
+func (h *Html) getDisqus() string {
+	title := h.p.Title()
+	url := h.getDisqusUrl()
+	identifier := h.getDisqusIdentifier()
+	disq := fmt.Sprintf(disqus_universal_code, title, url, identifier)
+	return disq
+}
+
+func (h *Html) getDisqusIdentifier() string {
+	if len(h.p.DisqusIdentifier()) > 0 {
+		return h.p.DisqusIdentifier()
+	}
+	return h.p.Path()
+}
+
+func (h *Html) getDisqusUrl() string {
+	return h.p.Path() + "/"
 }
 
 const css = `
+.copyright,
 header {
 	width: 800px;
 	margin: 0 auto;
+}
+
+.copyright{
+	margin-top: 30px;
 }
 
 h3 {
@@ -254,7 +276,7 @@ nav a {
 `
 const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
 const navWrapperFormat = `<nav>%s</nav>`
-const htmlFormat = `<!doctype html>
+const htmlFormat = `<!DOCTYPE html>
 <html>
 	<head>
 		<title>DevAbo.de | Graphic Novel | %s</title>
@@ -269,37 +291,32 @@ const htmlFormat = `<!doctype html>
 			%s
 			%s
 		</main>
+		%s
+		<div class="copyright">
+		All content including but not limited to the art, characters, story, website design & graphics are © copyright 2013-%d Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.
+		</div>
+		<div class="spacer"></div>
+		<footer><nav>%s</nav></footer>
+	</body>
+</html>
+`
 
-<div id="disqus_thread">
-     <div id="dsq-content">
-         <ul id="dsq-comments">
-            <li class="post pingback"><p>Pingback: <a href='https://DevAbo.de/2017/02/27/83-professionals/' rel='external nofollow' class='url'>DevAbo.de | Sci-Fi Webcomic and Graphic Novel | #83 Professionals &laquo;</a>)</p></li><!-- #comment-## -->
-		</ul>
-  </div>
-</div>
-
+const disqus_universal_code = `
+<div id="disqus_thread"></div>
 <script type="text/javascript">
-var disqus_url = 'https://DevAbo.de/2017/03/18/84-time-crystals/';
-var disqus_identifier = '1235 https://DevAbo.de/?p=1235';
+var disqus_title = "%s";
+var disqus_url = 'https://DevAbo.de%s';
+var disqus_identifier = '%s';
 var disqus_container_id = 'disqus_thread';
 var disqus_shortname = 'devabode';
-var disqus_title = "#84 Time Crystals";
 var disqus_config_custom = window.disqus_config;
 var disqus_config = function () {
-    /*
-    All currently supported events:
-    onReady: fires when everything is ready,
-    onNewComment: fires when a new comment is posted,
-    onIdentify: fires when user is authenticated
-    */
     this.language = '';
         this.callbacks.onReady.push(function () {
-
         // sync comments in the background so we don't block the page
         var script = document.createElement('script');
         script.async = true;
         script.src = '?cf_action=sync_comments&post_id=1235';
-
         var firstScript = document.getElementsByTagName('script')[0];
         firstScript.parentNode.insertBefore(script, firstScript);
     });
@@ -307,17 +324,12 @@ var disqus_config = function () {
         disqus_config_custom.call(this);
     }
 };
-
 (function() {
-    var dsq = document.createElement('script'); dsq.type = 'text/javascript';
+    var dsq = document.createElement('script');
+	dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 })();
 </script>
-
-<div class="spacer"></div>
-		<footer><nav>%s</nav></footer>
-	</body>
-</html>
 `

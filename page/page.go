@@ -1,23 +1,28 @@
 package page
 
 type Page struct {
-	title, path, imgUrl, servedrootpath string
-	first, prev, next, last             *Page
-	meta, navi                          [][]string
+	title, path, imgUrl, servedrootpath, disqusId string
+	first, prev, next, last                       *Page
+	meta, navi                                    [][]string
 }
 
 func NewPage(
 	title string,
 	path string,
 	imgUrl string,
+	disqusId string,
 	servedrootpath string) *Page {
-	return &Page{title, path, imgUrl, servedrootpath,
+	return &Page{title, path, imgUrl, servedrootpath, disqusId,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 
 }
 
 func (p *Page) Title() string {
 	return p.title
+}
+
+func (p *Page) DisqusIdentifier() string {
+	return p.disqusId
 }
 
 func (p *Page) SetRels(first *Page, prev *Page, next *Page, last *Page) {
