@@ -1,9 +1,11 @@
 package config
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -48,6 +50,21 @@ func PngDir() string {
 	pd := conf.PngDir
 	log.Println(pd)
 	return pd
+}
+
+func getDsn() string {
+	user := os.Getenv("DB_GOMIC_USER")
+	pass := os.Getenv("DB_GOMIC_PASS")
+	name := os.Getenv("DB_GOMIC_NAME")
+	host := os.Getenv("DB_GOMIC_HOST")
+	return fmt.Sprintf("%s:%s@%s/%s", user, pass, host, name)
+}
+
+func ConnectDb() *sql.DB {
+	dsn := getDsn()
+	db, _ := sql.Open("mysql", dsn)
+	db.Ping()
+	return db
 }
 
 func newConfig(yamlPath string) *cnf {
