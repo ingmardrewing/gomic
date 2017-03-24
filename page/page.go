@@ -1,5 +1,7 @@
 package page
 
+import "strings"
+
 type Page struct {
 	title, path, imgUrl, servedrootpath, disqusId string
 	first, prev, next, last                       *Page
@@ -15,6 +17,11 @@ func NewPage(
 	return &Page{title, path, imgUrl, servedrootpath, disqusId,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 
+}
+
+func (p *Page) Filename() string {
+	pathParts := strings.Split(p.imgUrl, "/")
+	return pathParts[len(pathParts)-1]
 }
 
 func (p *Page) Title() string {

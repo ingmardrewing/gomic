@@ -1,37 +1,26 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"io/ioutil"
-
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
+	"github.com/ingmardrewing/gomic/db"
+	"github.com/ingmardrewing/gomic/fs"
 )
 
 func main() {
 	config.Read("/Users/drewing/Sites/gomic.yaml")
-	//comic := comic.NewComic()
-	//	output := output.NewOutput(&comic)
-	//	output.WriteToFilesystem()
 
-	db := config.ConnectDb()
-	rows, err := db.Query("SELECT * FROM pages;")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var (
-			title    sql.NullString
-			path     sql.NullString
-			imgUrl   sql.NullString
-			disqusId sql.NullString
-		)
-		rows.Scan(&title, &path, &imgUrl, &disqusId)
-		fmt.Printf("%s - %s - %s - %s \n", title.String, path.String, imgUrl.String, disqusId.String)
-	}
-	//Read(config.PngDir())
+	db.Init()
+	rows := db.Query("SELECT * FROM pages;")
+
+	comic := comic.NewComic(rows)
+
+	currentImageFiles := fs.ReadImageFilenames()
+	comic.CheckForNewPages(currentImageFiles)
+
+	fs.NewOutput(&comic)
+	//output.WriteToFilesystem()
 
 	//return &Page{title, path, imgUrl, servedrootpath, disqusId,
 	/*
@@ -43,11 +32,4 @@ func main() {
 			}
 		}
 	*/
-}
-
-func Read(path string) {
-	files, _ := ioutil.ReadDir(path)
-	for _, f := range files {
-		fmt.Println(f.Name())
-	}
 }

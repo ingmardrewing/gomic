@@ -1,6 +1,10 @@
 package comic
 
 import (
+	"database/sql"
+	"fmt"
+	"log"
+
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/page"
 )
@@ -10,21 +14,24 @@ type Comic struct {
 	pages    []*page.Page
 }
 
-func (c *Comic) generatePages() {
-	for _, pc := range config.Pages() {
-		p := c.generatePage(pc, config.Servedrootpath())
+func (c *Comic) generatePages(rows *sql.Rows) {
+	for rows.Next() {
+		var (
+			title    sql.NullString
+			path     sql.NullString
+			imgUrl   sql.NullString
+			disqusId sql.NullString
+		)
+		rows.Scan(&title, &path, &imgUrl, &disqusId)
+		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String, config.Servedrootpath())
 		c.AddPage(p)
 	}
 }
 
-func (c *Comic) generatePage(pc map[string]string, servedRootPath string) *page.Page {
-	return page.NewPage(pc["title"], pc["path"], pc["imgUrl"], pc["disqusId"], servedRootPath)
-}
-
-func NewComic() Comic {
+func NewComic(rows *sql.Rows) Comic {
 	pages := []*page.Page{}
 	c := Comic{config.Rootpath(), pages}
-	c.generatePages()
+	c.generatePages(rows)
 	c.connectPages()
 	return c
 }
@@ -94,4 +101,28 @@ func (c *Comic) lastPage() *page.Page {
 		return c.pages[l-1]
 	}
 	return nil
+}
+
+func (c *Comic) isNewFile(filename string) bool {
+	for _, p := range c.pages {
+		fn := p.Filename()
+		fmt.Println(fn)
+		if fn == filename {
+			return false
+		}
+	}
+	return true
+}
+
+func (c *Comic) CheckForNewPages(filenames []string) {
+	found := false
+	for _, f := range filenames {
+		if c.isNewFile(f) {
+			fmt.Printf("new: %s", f)
+			found = true
+		}
+	}
+	if !found {
+		log.Println("No new page found")
+	}
 }

@@ -1,4 +1,4 @@
-package output
+package fs
 
 import (
 	"fmt"
@@ -11,6 +11,20 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/page"
 )
+
+func main() {
+	fmt.Println("vim-go")
+}
+
+func ReadImageFilenames() []string {
+	path := config.PngDir()
+	files, _ := ioutil.ReadDir(path)
+	fileNames := []string{}
+	for _, f := range files {
+		fileNames = append(fileNames, f.Name())
+	}
+	return fileNames
+}
 
 type Output struct {
 	comic *comic.Comic
