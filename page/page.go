@@ -1,20 +1,47 @@
 package page
 
-import "strings"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"regexp"
+	"strings"
+	"time"
+
+	"github.com/ingmardrewing/gomic/config"
+)
 
 type Page struct {
-	title, path, imgUrl, servedrootpath, disqusId string
-	first, prev, next, last                       *Page
-	meta, navi                                    [][]string
+	title, path, imgUrl, disqusId string
+	first, prev, next, last       *Page
+	meta, navi                    [][]string
+}
+
+func NewPageFromFilename(filename string) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("Enter title for %s: ", filename)
+	title, _ := reader.ReadString('\n')
+
+	whitespace := regexp.MustCompile(`\s+`)
+	forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
+	pathTitle := whitespace.ReplaceAllString(title, "-")
+	pathTitle = forbidden.ReplaceAllString(pathTitle, "")
+
+	t := time.Now()
+	y := t.Year()
+	m := int(t.Month())
+	d := t.Day()
+	path := fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
+	log.Println(path)
 }
 
 func NewPage(
 	title string,
 	path string,
 	imgUrl string,
-	disqusId string,
-	servedrootpath string) *Page {
-	return &Page{title, path, imgUrl, servedrootpath, disqusId,
+	disqusId string) *Page {
+	return &Page{title, path, imgUrl, disqusId,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 
 }
@@ -98,12 +125,8 @@ func (p *Page) GetNavi() [][]string {
 }
 
 func (p *Page) Path() string {
-	path := p.servedrootpath + p.path
+	path := config.Servedrootpath() + p.path
 	return path
-}
-
-func (p *Page) ServedRootPath() string {
-	return p.servedrootpath
 }
 
 func (p *Page) FSPath() string {

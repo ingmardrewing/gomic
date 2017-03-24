@@ -29,7 +29,6 @@ func Read(yamlPath string) {
 
 func Servedrootpath() string {
 	srp := conf.Servedrootpath
-	log.Println("Servedrootpath", srp)
 	return srp
 }
 

@@ -2,7 +2,6 @@ package comic
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/ingmardrewing/gomic/config"
@@ -23,7 +22,7 @@ func (c *Comic) generatePages(rows *sql.Rows) {
 			disqusId sql.NullString
 		)
 		rows.Scan(&title, &path, &imgUrl, &disqusId)
-		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String, config.Servedrootpath())
+		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String)
 		c.AddPage(p)
 	}
 }
@@ -103,10 +102,21 @@ func (c *Comic) lastPage() *page.Page {
 	return nil
 }
 
+func (c *Comic) isRelevant(filename string) bool {
+	irr := ".DS_Store"
+	log.Println(irr, "vs.", filename)
+	if filename == irr {
+		return false
+	}
+	return true
+}
+
 func (c *Comic) isNewFile(filename string) bool {
+	if !c.isRelevant(filename) {
+		return false
+	}
 	for _, p := range c.pages {
 		fn := p.Filename()
-		fmt.Println(fn)
 		if fn == filename {
 			return false
 		}
@@ -115,14 +125,10 @@ func (c *Comic) isNewFile(filename string) bool {
 }
 
 func (c *Comic) CheckForNewPages(filenames []string) {
-	found := false
 	for _, f := range filenames {
 		if c.isNewFile(f) {
-			fmt.Printf("new: %s", f)
-			found = true
+			log.Printf("Found new file: %s", f)
+			page.NewPageFromFilename(f)
 		}
-	}
-	if !found {
-		log.Println("No new page found")
 	}
 }
