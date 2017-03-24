@@ -18,9 +18,10 @@ func main() {
 
 	currentImageFiles := fs.ReadImageFilenames()
 	comic.CheckForNewPages(currentImageFiles)
+	comic.ConnectPages()
 
-	fs.NewOutput(&comic)
-	//output.WriteToFilesystem()
+	output := fs.NewOutput(&comic)
+	output.WriteToFilesystem()
 
 	//return &Page{title, path, imgUrl, servedrootpath, disqusId,
 	/*

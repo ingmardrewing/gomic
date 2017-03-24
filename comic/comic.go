@@ -31,7 +31,7 @@ func NewComic(rows *sql.Rows) Comic {
 	pages := []*page.Page{}
 	c := Comic{config.Rootpath(), pages}
 	c.generatePages(rows)
-	c.connectPages()
+	c.ConnectPages()
 	return c
 }
 
@@ -39,7 +39,7 @@ func (c *Comic) AddPage(p *page.Page) {
 	c.pages = append(c.pages, p)
 }
 
-func (c *Comic) connectPages() {
+func (c *Comic) ConnectPages() {
 	for i, p := range c.pages {
 		p.SetRels(
 			c.firstFor(i),
