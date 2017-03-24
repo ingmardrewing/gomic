@@ -104,7 +104,6 @@ func (c *Comic) lastPage() *page.Page {
 
 func (c *Comic) isRelevant(filename string) bool {
 	irr := ".DS_Store"
-	log.Println(irr, "vs.", filename)
 	if filename == irr {
 		return false
 	}
@@ -128,7 +127,7 @@ func (c *Comic) CheckForNewPages(filenames []string) {
 	for _, f := range filenames {
 		if c.isNewFile(f) {
 			log.Printf("Found new file: %s", f)
-			page.NewPageFromFilename(f)
+			c.AddPage(page.NewPageFromFilename(f))
 		}
 	}
 }

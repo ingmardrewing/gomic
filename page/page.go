@@ -18,7 +18,7 @@ type Page struct {
 	meta, navi                    [][]string
 }
 
-func NewPageFromFilename(filename string) {
+func NewPageFromFilename(filename string) *Page {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("Enter title for %s: ", filename)
 	title, _ := reader.ReadString('\n')
@@ -34,6 +34,16 @@ func NewPageFromFilename(filename string) {
 	d := t.Day()
 	path := fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
 	log.Println(path)
+
+	id := y*10000 + m*100 + d
+	disqusId := fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
+	log.Println(disqusId)
+
+	imgUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
+	log.Println(imgUrl)
+
+	return &Page{title, path, imgUrl, disqusId,
+		nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func NewPage(
