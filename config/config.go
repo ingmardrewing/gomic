@@ -15,6 +15,8 @@ func main() {
 
 type cnf struct {
 	Url            string              `yaml:"url"`
+	AwsBucket      string              `yaml:"aws_bucket"`
+	AwsDir         string              `yaml:"aws_dir"`
 	Rootpath       string              `yaml:"rootpath"`
 	Servedrootpath string              `yaml:"servedrootpath"`
 	PngDir         string              `yaml:"pngdir"`
@@ -56,6 +58,18 @@ func GetDsn() string {
 	name := os.Getenv("DB_GOMIC_NAME")
 	host := os.Getenv("DB_GOMIC_HOST")
 	return fmt.Sprintf("%s:%s@%s/%s", user, pass, host, name)
+}
+
+func ReadAwsRegion() string {
+	return os.Getenv("AWS_REGION")
+}
+
+func AwsBucket() string {
+	return conf.AwsBucket
+}
+
+func AwsDir() string {
+	return conf.AwsDir
 }
 
 func newConfig(yamlPath string) *cnf {
