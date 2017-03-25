@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -24,12 +25,16 @@ type cnf struct {
 }
 
 var conf *cnf
+var Stage string
 
 func Read(yamlPath string) {
 	conf = newConfig(yamlPath)
 }
 
 func Servedrootpath() string {
+	if Stage == "test" {
+		return "https://devabo.de/gomic"
+	}
 	srp := conf.Servedrootpath
 	return srp
 }
@@ -60,6 +65,14 @@ func GetDsn() string {
 	return fmt.Sprintf("%s:%s@%s/%s", user, pass, host, name)
 }
 
+func SshUsername() string {
+	return os.Getenv("SSH_USER")
+}
+
+func SshKeyfilePath() string {
+	return os.Getenv("SSH_KEY")
+}
+
 func ReadAwsRegion() string {
 	return os.Getenv("AWS_REGION")
 }
@@ -73,6 +86,9 @@ func AwsDir() string {
 }
 
 func newConfig(yamlPath string) *cnf {
+	stg := flag.String("stage", "dev", "target stage")
+	flag.Parse()
+	Stage = *stg
 
 	yamldata, err := ioutil.ReadFile(yamlPath)
 	if err != nil {

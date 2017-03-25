@@ -6,6 +6,7 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/fs"
+	"github.com/ingmardrewing/gomic/strato"
 )
 
 func main() {
@@ -22,4 +23,8 @@ func main() {
 
 	output := fs.NewOutput(&comic)
 	output.WriteToFilesystem()
+
+	if config.Stage == "test" {
+		strato.UploadDir("/Users/drewing/Sites/gomic")
+	}
 }

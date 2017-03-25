@@ -172,10 +172,11 @@ func (h *Html) getHeadline() string {
 
 func (h *Html) getHeaderHtml() string {
 	hl := h.getHeadline()
+	s := config.Servedrootpath()
 	return fmt.Sprintf(`
-	<a href="https://DevAbo.de/" class="home"><!--DevAbo.de--></a>
-    <a href="https://devabo.de/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
-	%s`, hl)
+	<a href="%s" class="home"><!--DevAbo.de--></a>
+    <a href="%s/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
+	%s`, s, s, hl)
 }
 
 func (h *Html) getDisqus() string {
