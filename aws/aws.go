@@ -35,8 +35,8 @@ func UploadPage(p *page.Page) {
 	stop()
 
 	bucket := config.AwsBucket()
-	localPathToFile := fmt.Sprintf("%s/%s", config.PngDir(), p.Filename())
-	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.Filename())
+	localPathToFile := fmt.Sprintf("%s/%s", config.PngDir(), p.ImageFilename())
+	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
 	file, err := os.Open(localPathToFile)
 	if err != nil {
 		exitErrorf("Unable to open file %q, %v", err)
@@ -53,10 +53,10 @@ func UploadPage(p *page.Page) {
 	})
 	if err != nil {
 		// Print the error and exit.
-		exitErrorf("Unable to upload %q to %q, %v", p.Filename(), bucket+remotePathToFile, err)
+		exitErrorf("Unable to upload %q to %q, %v", p.ImageFilename(), bucket+remotePathToFile, err)
 	}
 
-	fmt.Printf("Successfully uploaded %q to %q\n", p.Filename(), bucket+remotePathToFile)
+	fmt.Printf("Successfully uploaded %q to %q\n", p.ImageFilename(), bucket+remotePathToFile)
 	fmt.Println("Going to update db now")
 
 	stop()

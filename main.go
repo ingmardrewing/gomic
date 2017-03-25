@@ -27,4 +27,6 @@ func main() {
 	if config.Stage == "test" {
 		strato.UploadDir("/Users/drewing/Sites/gomic")
 	}
+
+	// TODO: connect to and update on  Twitter, FB, ...
 }

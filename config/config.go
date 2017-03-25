@@ -15,13 +15,15 @@ func main() {
 }
 
 type cnf struct {
-	Url            string              `yaml:"url"`
-	AwsBucket      string              `yaml:"aws_bucket"`
-	AwsDir         string              `yaml:"aws_dir"`
-	Rootpath       string              `yaml:"rootpath"`
-	Servedrootpath string              `yaml:"servedrootpath"`
-	PngDir         string              `yaml:"pngdir"`
-	Pages          []map[string]string `yaml:"pages"`
+	Url                string              `yaml:"url"`
+	AwsBucket          string              `yaml:"aws_bucket"`
+	AwsDir             string              `yaml:"aws_dir"`
+	Rootpath           string              `yaml:"rootpath"`
+	Servedrootpath     string              `yaml:"servedrootpath"`
+	ServedTestrootpath string              `yaml:"servedtestrootpath"`
+	ServedProdrootpath string              `yaml:"servedprodrootpath"`
+	PngDir             string              `yaml:"pngdir"`
+	Pages              []map[string]string `yaml:"pages"`
 }
 
 var conf *cnf
@@ -32,11 +34,13 @@ func Read(yamlPath string) {
 }
 
 func Servedrootpath() string {
-	if Stage == "test" {
-		return "https://devabo.de/gomic"
+	if Stage == "prod" {
+		return conf.ServedProdrootpath
 	}
-	srp := conf.Servedrootpath
-	return srp
+	if Stage == "test" {
+		return conf.ServedTestrootpath
+	}
+	return conf.Servedrootpath
 }
 
 func Pages() []map[string]string {

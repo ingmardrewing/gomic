@@ -3,6 +3,7 @@ package comic
 import (
 	"database/sql"
 	"log"
+	"regexp"
 
 	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/config"
@@ -108,6 +109,10 @@ func (c *Comic) isRelevant(filename string) bool {
 	if filename == irr {
 		return false
 	}
+	thumb := regexp.MustCompile(`^thumb_`)
+	if thumb.MatchString(filename) {
+		return false
+	}
 	return true
 }
 
@@ -116,7 +121,7 @@ func (c *Comic) isNewFile(filename string) bool {
 		return false
 	}
 	for _, p := range c.pages {
-		fn := p.Filename()
+		fn := p.ImageFilename()
 		if fn == filename {
 			return false
 		}

@@ -78,7 +78,7 @@ func NewPage(
 
 }
 
-func (p *Page) Filename() string {
+func (p *Page) ImageFilename() string {
 	pathParts := strings.Split(p.imgUrl, "/")
 	return pathParts[len(pathParts)-1]
 }

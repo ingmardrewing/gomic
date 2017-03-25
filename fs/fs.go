@@ -2,14 +2,17 @@ package fs
 
 import (
 	"fmt"
+	"image/png"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/page"
+	"github.com/nfnt/resize"
 )
 
 func main() {
@@ -35,10 +38,61 @@ func NewOutput(comic *comic.Comic) *Output {
 }
 
 func (o *Output) WriteToFilesystem() {
+	o.writeNarrativePages()
+	o.writeCss()
+	o.writeArchive()
+}
+
+func (o *Output) writeNarrativePages() {
 	for _, p := range o.comic.GetPages() {
 		o.writePageToFileSystem(p)
 	}
-	o.writeCss()
+}
+
+func (o *Output) getImageAsBase64(p *page.Page) {
+	imgpath := config.PngDir() + p.ImageFilename()
+	outimgpath := config.PngDir() + "thumb_" + p.ImageFilename()
+	if _, err := os.Stat(outimgpath); os.IsNotExist(err) {
+		// open "test.jpg"
+		file, err := os.Open(imgpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// decode jpeg into image.Image
+		img, err := png.Decode(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+		file.Close()
+
+		// resize to width 1000 using Lanczos resampling
+		// and preserve aspect ratio
+		m := resize.Resize(150, 0, img, resize.Lanczos3)
+
+		out, err := os.Create(outimgpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer out.Close()
+
+		// write new image to file
+		png.Encode(out, m)
+	}
+}
+
+func (o *Output) writeArchive() {
+	list := []string{}
+	for _, p := range o.comic.GetPages() {
+		o.getImageAsBase64(p)
+		list = append(list, fmt.Sprintf(`<li><a href="%s">%s</a></li>`, p.Path(), p.Title()))
+
+	}
+
+	arc := fmt.Sprintf("<ul>%s</ul>", strings.Join(list, "\n"))
+	ah := NewArchiveHtml(arc)
+	log.Println(ah.getContent())
+	o.writeStringToFS(config.Rootpath()+"/archive.html", ah.writePage())
 }
 
 func (o *Output) writeCss() {
@@ -52,12 +106,12 @@ func (o *Output) writePageToFileSystem(p *page.Page) {
 	absPath := config.Rootpath() + p.FSPath()
 	o.prepareFileSystem(absPath)
 
-	h := NewHtml(p)
+	h := NewNarrativePageHtml(p)
 	o.writeStringToFS(absPath+"/index.html", h.writePage())
 }
 
 func (o *Output) writeStringToFS(absPath string, html string) {
-	log.Println("writing html to filesystem: ", absPath)
+	//log.Println("writing html to filesystem: ", absPath)
 	b := []byte(html)
 	err := ioutil.WriteFile(absPath, b, 0644)
 	if err != nil {
@@ -87,37 +141,118 @@ func (o *Output) pathExists(path string) (bool, error) {
 	return true, err
 }
 
-type Html struct {
-	p                                           *page.Page
-	title, meta, csslink, img, navi, footerNavi string
-}
+type HTML struct{}
 
-func NewHtml(p *page.Page) *Html {
-	return &Html{p, "", "", "", "", "", ""}
-}
-
-func (h *Html) getFooterNavi() string {
-	return `<a href="http://twitter.com/devabo_de">Twitter</a>
-	<a href="/about.html">About</a>
-	<a href="/archive.html">Archive</a>
-	<a href="/imprint.html">Imprint / Impressum</a>
-	`
-}
-
-func (h *Html) version() string {
+func (html *HTML) version() string {
 	t := time.Now()
 	return fmt.Sprintf("%d%02d%02dT%02d%02d%02d",
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
 }
 
-func (h *Html) getCssLink() string {
-	path := config.Servedrootpath() + "/css/style.css?version=" + h.version()
+func (html *HTML) getFooterNavi() string {
+	p := config.Servedrootpath()
+	return fmt.Sprintf(`<a href="http://twitter.com/devabo_de">Twitter</a>
+	<a href="%s/about.html">About</a>
+	<a href="%s/archive.html">Archive</a>
+	<a href="%s/imprint.html">Imprint / Impressum</a>
+	`, p, p, p)
+}
+
+func (html *HTML) getCssLink() string {
+	path := config.Servedrootpath() + "/css/style.css?version=" + html.version()
 	format := `<link rel="stylesheet" href="%s" type="text/css">`
 	return fmt.Sprintf(format, path)
 }
 
-func (h *Html) writePage() string {
+func (html *HTML) getHeaderLink(vals ...string) string {
+	l := fmt.Sprintf(`<link rel="%s" title="%s" href="%s">`, vals[0], vals[1], vals[2])
+	return l
+}
+
+func (html *HTML) getHeadline(txt string) string {
+	return fmt.Sprintf(`<h3>%s</h3>`, txt)
+}
+
+func (html *HTML) getMetaHtml() string {
+	return ""
+}
+
+func (html *HTML) getNaviHtml() string {
+	return ""
+}
+
+func (html *HTML) getTitle() string {
+	return ""
+}
+
+func (html *HTML) getHeaderHtml() string {
+	hl := html.getHeadline("")
+	s := config.Servedrootpath()
+	return fmt.Sprintf(`
+	<a href="%s" class="home"><!--DevAbo.de--></a>
+    <a href="%s/2013/08/01/a-step-in-the-dark/" class="orange">New Reader? Start here!</a>
+	%s`, s, s, hl)
+}
+
+func (html *HTML) getContent() string {
+	return "x"
+}
+
+func (html *HTML) writePage() string {
+	css := html.getCssLink()
+	meta := html.getMetaHtml()
+	navi := html.getNaviHtml()
+	title := html.getTitle()
+	footerNavi := html.getFooterNavi()
+	content := html.getContent()
+	header := html.getHeaderHtml()
+	disqus := ""
+	year := time.Now().Year()
+	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
+}
+
+type ArchiveHtml struct {
+	HTML
+	content string
+}
+
+func NewArchiveHtml(content string) *ArchiveHtml {
+	return &ArchiveHtml{HTML{}, content}
+}
+
+func (ah *ArchiveHtml) getContent() string {
+	return ah.content
+}
+func (ah *ArchiveHtml) writePage() string {
+	css := ah.getCssLink()
+	meta := ah.getMetaHtml()
+	navi := ah.getNaviHtml()
+	title := ah.getTitle()
+	footerNavi := ah.getFooterNavi()
+	content := ah.getContent()
+	header := ah.getHeaderHtml()
+	disqus := ""
+	year := time.Now().Year()
+	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
+}
+
+type NarrativePageHtml struct {
+	HTML
+	p          *page.Page
+	title      string
+	meta       string
+	csslink    string
+	img        string
+	navi       string
+	footerNavi string
+}
+
+func NewNarrativePageHtml(p *page.Page) *NarrativePageHtml {
+	return &NarrativePageHtml{HTML{}, p, "", "", "", "", "", ""}
+}
+
+func (h *NarrativePageHtml) writePage() string {
 	css := h.getCssLink()
 	meta := h.getMetaHtml()
 	navi := h.getNaviHtml()
@@ -130,7 +265,7 @@ func (h *Html) writePage() string {
 	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
 }
 
-func (h *Html) getContent() string {
+func (h *NarrativePageHtml) getContent() string {
 	f := `<img src="%s" width="800" height="1334" alt="">`
 	html := fmt.Sprintf(f, h.p.Img())
 	if !h.p.IsLast() {
@@ -139,7 +274,7 @@ func (h *Html) getContent() string {
 	return html
 }
 
-func (h *Html) getNaviHtml() string {
+func (h *NarrativePageHtml) getNaviHtml() string {
 	ns := h.p.GetNavi()
 	html := ""
 	for _, n := range ns {
@@ -148,11 +283,11 @@ func (h *Html) getNaviHtml() string {
 	return fmt.Sprintf(`<nav>%s</nav>`, html)
 }
 
-func (h *Html) getNaviLink(vals ...string) string {
+func (h *NarrativePageHtml) getNaviLink(vals ...string) string {
 	return fmt.Sprintf(`<a rel="%s" title="%s" href="%s">%s</a>`, vals[0], vals[1], vals[2], vals[3])
 }
 
-func (h *Html) getMetaHtml() string {
+func (h *NarrativePageHtml) getMetaHtml() string {
 	ms := h.p.GetMeta()
 	html := ""
 	for _, m := range ms {
@@ -161,17 +296,8 @@ func (h *Html) getMetaHtml() string {
 	return html
 }
 
-func (h *Html) getHeaderLink(vals ...string) string {
-	l := fmt.Sprintf(`<link rel="%s" title="%s" href="%s">`, vals[0], vals[1], vals[2])
-	return l
-}
-
-func (h *Html) getHeadline() string {
-	return fmt.Sprintf(`<h3>%s</h3>`, h.p.Title())
-}
-
-func (h *Html) getHeaderHtml() string {
-	hl := h.getHeadline()
+func (h *NarrativePageHtml) getHeaderHtml() string {
+	hl := h.getHeadline(h.p.Title())
 	s := config.Servedrootpath()
 	return fmt.Sprintf(`
 	<a href="%s" class="home"><!--DevAbo.de--></a>
@@ -179,7 +305,7 @@ func (h *Html) getHeaderHtml() string {
 	%s`, s, s, hl)
 }
 
-func (h *Html) getDisqus() string {
+func (h *NarrativePageHtml) getDisqus() string {
 	title := h.p.Title()
 	url := h.getDisqusUrl()
 	identifier := h.getDisqusIdentifier()
@@ -187,14 +313,14 @@ func (h *Html) getDisqus() string {
 	return disq
 }
 
-func (h *Html) getDisqusIdentifier() string {
+func (h *NarrativePageHtml) getDisqusIdentifier() string {
 	if len(h.p.DisqusIdentifier()) > 0 {
 		return h.p.DisqusIdentifier()
 	}
 	return h.p.Path()
 }
 
-func (h *Html) getDisqusUrl() string {
+func (h *NarrativePageHtml) getDisqusUrl() string {
 	return h.p.Path() + "/"
 }
 
