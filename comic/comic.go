@@ -84,7 +84,7 @@ func (c *Comic) nextFor(i int) *page.Page {
 func (c *Comic) lastFor(i int) *page.Page {
 	l := len(c.pages)
 	if l > 0 && i != l-1 {
-		return c.lastPage()
+		return c.LastPage()
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func (c *Comic) firstPage() *page.Page {
 	return nil
 }
 
-func (c *Comic) lastPage() *page.Page {
+func (c *Comic) LastPage() *page.Page {
 	l := len(c.pages)
 	if l > 0 {
 		return c.pages[l-1]
