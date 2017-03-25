@@ -31,7 +31,6 @@ func NewComic(rows *sql.Rows) Comic {
 	pages := []*page.Page{}
 	c := Comic{config.Rootpath(), pages}
 	c.generatePages(rows)
-	c.ConnectPages()
 	return c
 }
 

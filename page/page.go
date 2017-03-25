@@ -3,7 +3,6 @@ package page
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -19,28 +18,42 @@ type Page struct {
 }
 
 func NewPageFromFilename(filename string) *Page {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Enter title for %s: ", filename)
-	title, _ := reader.ReadString('\n')
 
-	whitespace := regexp.MustCompile(`\s+`)
-	forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
-	pathTitle := whitespace.ReplaceAllString(title, "-")
-	pathTitle = forbidden.ReplaceAllString(pathTitle, "")
+	var title, path, imgUrl, disqusId string
+	for {
 
-	t := time.Now()
-	y := t.Year()
-	m := int(t.Month())
-	d := t.Day()
-	path := fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
-	log.Println(path)
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("Enter title for %s: ", filename)
+		title, _ = reader.ReadString('\n')
+		title = strings.TrimSpace(title)
 
-	id := y*10000 + m*100 + d
-	disqusId := fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
-	log.Println(disqusId)
+		whitespace := regexp.MustCompile(`\s+`)
+		forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
+		trailingdash := regexp.MustCompile(`-$`)
+		pathTitle := whitespace.ReplaceAllString(title, "-")
+		pathTitle = forbidden.ReplaceAllString(pathTitle, "")
+		pathTitle = trailingdash.ReplaceAllString(pathTitle, "")
 
-	imgUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
-	log.Println(imgUrl)
+		t := time.Now()
+		y := t.Year()
+		m := int(t.Month())
+		d := t.Day()
+		path = fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
+
+		id := y*10000 + m*100 + d
+		disqusId = fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
+
+		imgUrl = fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
+
+		summary := fmt.Sprintf("\ntitle: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", title, path, disqusId, imgUrl)
+		fmt.Printf("Creating the following page:\n%s\nok? [yN]", summary)
+		confirmation, _ := reader.ReadString('\n')
+		confirmation = strings.TrimSpace(confirmation)
+		if confirmation == "y" || confirmation == "Y" {
+			break
+		}
+		fmt.Println("Okay, let's try again ...")
+	}
 
 	return &Page{title, path, imgUrl, disqusId,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
