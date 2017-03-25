@@ -22,15 +22,4 @@ func main() {
 
 	output := fs.NewOutput(&comic)
 	output.WriteToFilesystem()
-
-	//return &Page{title, path, imgUrl, servedrootpath, disqusId,
-	/*
-		for _, p := range config.Pages() {
-			ins := fmt.Sprintf("INSERT INTO pages VALUES('%s', '%s', '%s', '%s');\n", p["title"], p["path"], p["imgUrl"], p["disqusId"])
-			_, err := db.Exec(ins)
-			if err != nil {
-				panic(err.Error())
-			}
-		}
-	*/
 }

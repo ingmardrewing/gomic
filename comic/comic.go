@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/config"
+	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/page"
 )
 
@@ -126,7 +128,10 @@ func (c *Comic) CheckForNewPages(filenames []string) {
 	for _, f := range filenames {
 		if c.isNewFile(f) {
 			log.Printf("Found new file: %s", f)
-			c.AddPage(page.NewPageFromFilename(f))
+			p := page.NewPageFromFilename(f)
+			aws.UploadPage(p)
+			db.InsertPage(p)
+			c.AddPage(p)
 		}
 	}
 }

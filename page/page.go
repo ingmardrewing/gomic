@@ -8,11 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-
 	"github.com/ingmardrewing/gomic/config"
 )
 
@@ -61,56 +56,8 @@ func NewPageFromFilename(filename string) *Page {
 		}
 		fmt.Println("Okay, let's try again ...")
 	}
-	// Initialize a session reading env vars
-	sess, err := session.NewSession()
 
-	// Create S3 service client
-	svc := s3.New(sess)
-	result, err := svc.ListBuckets(nil)
-	if err != nil {
-		exitErrorf("Unable to list buckets, %v", err)
-	}
-
-	fmt.Println("Buckets:")
-	for _, b := range result.Buckets {
-		fmt.Printf("* %s created on %s\n",
-			aws.StringValue(b.Name), aws.TimeValue(b.CreationDate))
-	}
-
-	answer := AskUser("Proceed? [yN]")
-	if answer {
-		fmt.Println("continuing")
-	}
-
-	bucket := config.AwsBucket()
-	localPathToFile := fmt.Sprintf("%s/%s", config.PngDir(), filename)
-	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), filename)
-	file, err := os.Open(localPathToFile)
-	if err != nil {
-		exitErrorf("Unable to open file %q, %v", err)
-	}
-	defer file.Close()
-
-	uploader := s3manager.NewUploader(sess)
-
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(remotePathToFile),
-		Body:   file,
-	})
-	if err != nil {
-		// Print the error and exit.
-		exitErrorf("Unable to upload %q to %q, %v", filename, bucket, err)
-	}
-
-	fmt.Printf("Successfully uploaded %q to %q\n", filename, bucket)
-	answer = AskUser("Proceed? [yN]")
-	if answer {
-		fmt.Println("continuing")
-	}
-
-	return &Page{title, path, imgUrl, disqusId,
-		nil, nil, nil, nil, [][]string{}, [][]string{}}
+	return &Page{title, path, imgUrl, disqusId, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func AskUser(question string) bool {
@@ -119,11 +66,6 @@ func AskUser(question string) bool {
 	confirmation, _ := reader.ReadString('\n')
 	confirmation = strings.TrimSpace(confirmation)
 	return confirmation == "y" || confirmation == "Y"
-}
-
-func exitErrorf(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, msg+"\n", args...)
-	os.Exit(1)
 }
 
 func NewPage(
@@ -143,6 +85,14 @@ func (p *Page) Filename() string {
 
 func (p *Page) Title() string {
 	return p.title
+}
+
+func (p *Page) DisqusId() string {
+	return p.disqusId
+}
+
+func (p *Page) ImgUrl() string {
+	return p.imgUrl
 }
 
 func (p *Page) DisqusIdentifier() string {
