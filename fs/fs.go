@@ -1,7 +1,10 @@
 package fs
 
 import (
+	"bufio"
+	"encoding/base64"
 	"fmt"
+	"image"
 	"image/png"
 	"io/ioutil"
 	"log"
@@ -49,7 +52,7 @@ func (o *Output) writeNarrativePages() {
 	}
 }
 
-func (o *Output) getImageAsBase64(p *page.Page) {
+func (o *Output) writeThumbnailFor(p *page.Page) string {
 	imgpath := config.PngDir() + p.ImageFilename()
 	outimgpath := config.PngDir() + "thumb_" + p.ImageFilename()
 	if _, err := os.Stat(outimgpath); os.IsNotExist(err) {
@@ -79,17 +82,53 @@ func (o *Output) getImageAsBase64(p *page.Page) {
 		// write new image to file
 		png.Encode(out, m)
 	}
+	return outimgpath
+}
+
+func (o *Output) getBase64FromPngFile(path string) (string, int, int) {
+	imgFile, err := os.Open(path) // a QR code image
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	defer imgFile.Close()
+
+	fInfo, _ := imgFile.Stat()
+	var size int64 = fInfo.Size()
+	buf := make([]byte, size)
+
+	fReader := bufio.NewReader(imgFile)
+	fReader.Read(buf)
+	b := base64.StdEncoding.EncodeToString(buf)
+
+	imgFile2, err := os.Open(path) // a QR code image
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	defer imgFile2.Close()
+	ime, _, err := image.DecodeConfig(imgFile2)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %v\n", path, err)
+	}
+
+	return b, ime.Width, ime.Height
 }
 
 func (o *Output) writeArchive() {
 	list := []string{}
 	for _, p := range o.comic.GetPages() {
-		o.getImageAsBase64(p)
-		list = append(list, fmt.Sprintf(`<li><a href="%s">%s</a></li>`, p.Path(), p.Title()))
+		path := o.writeThumbnailFor(p)
+		b, w, h := o.getBase64FromPngFile(path)
+		list = append(list, fmt.Sprintf(`<li><a href="%s"><img src="data:image/png;base64,%s" width="%d" height="%d" alt="%s" title="%s"></a></li>`, p.Path(), b, w, h, p.Title(), p.Title()))
 
 	}
 
-	arc := fmt.Sprintf("<ul>%s</ul>", strings.Join(list, "\n"))
+	arc := fmt.Sprintf(`<ul class="archive">%s</ul>`, strings.Join(list, "\n"))
 	ah := NewArchiveHtml(arc)
 	log.Println(ah.getContent())
 	o.writeStringToFS(config.Rootpath()+"/archive.html", ah.writePage())
@@ -331,6 +370,15 @@ header {
 	margin: 0 auto;
 }
 
+ul.archive {
+	list-style-type: none;
+}
+
+ul.archive li {
+	display: inline-block;
+	margin: 10px;
+}
+
 .copyright{
 	margin-top: 30px;
 }
@@ -434,7 +482,7 @@ const htmlFormat = `<!DOCTYPE html>
 		</main>
 		%s
 		<div class="copyright">
-		All content including but not limited to the art, characters, story, website design & graphics are © copyright 2013-%d Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.
+		All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-%d Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.
 		</div>
 		<div class="spacer"></div>
 		<footer><nav>%s</nav></footer>
