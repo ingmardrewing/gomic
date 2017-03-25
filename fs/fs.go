@@ -42,8 +42,19 @@ func NewOutput(comic *comic.Comic) *Output {
 
 func (o *Output) WriteToFilesystem() {
 	o.writeNarrativePages()
+	o.writeIndex()
 	o.writeCss()
 	o.writeArchive()
+}
+
+func (o *Output) writeIndex() {
+	pgs := o.comic.GetPages()
+	p := pgs[len(pgs)-1]
+	absPath := config.Rootpath()
+
+	h := NewNarrativePageHtml(p)
+	o.writeStringToFS(absPath+"/index.html", h.writePage())
+
 }
 
 func (o *Output) writeNarrativePages() {
