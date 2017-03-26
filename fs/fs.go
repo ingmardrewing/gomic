@@ -49,7 +49,7 @@ func (o *Output) WriteToFilesystem() {
 
 func (o *Output) writeRss() {
 	rss := o.Rss()
-	o.writeStringToFS(config.Rootpath()+"/rss.xml", rss)
+	o.writeStringToFS(config.Rootpath()+"/feed/rss.xml", rss)
 }
 
 func (o *Output) writeNarrativePages() {
@@ -504,6 +504,23 @@ const htmlFormat = `<!DOCTYPE html>
 		<meta name="page-topic" content="Science Fiction Web-Comic">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="dns-prefetch" href="https://DevAbo.de">
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
 		%s
 
 
@@ -649,6 +666,16 @@ var rss = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
 
 <channel>
 	<title>DevAbo.de</title>
+    <image>
+      <url>https://devabo.de/favicon-32x32.png</url>
+      <title>DevAbo.de</title>
+      <link>https://devabo.de</link>
+      <width>32</width>
+      <height>32</height>
+      <description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
+    </image>
+	<icon>
+	</icon>
 	<atom:link href="https://DevAbo.de/rss.xml" rel="self" type="application/rss+xml" />
 	<link>https://DevAbo.de</link>
 	<description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
