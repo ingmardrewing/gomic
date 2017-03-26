@@ -471,7 +471,32 @@ const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
 const navWrapperFormat = `<nav>%s</nav>`
 const htmlFormat = `<!DOCTYPE html>
 <html>
-	<head>
+	<head profile="http://gmpg.org/xfn/11">
+		<meta http-equiv="imagetoolbar" content="no">
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+		<meta http-equiv="Language" content="en">
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="cache-control" content="Private">
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="robots" content="index,follow">
+		<meta name="author" content="Ingmar Drewing"> 
+		<meta name="publisher" content="Ingmar Drewing"> 
+		<meta name="keywords" content="web comic, comic, cartoon, sci fi, satire, parody, science fiction, action, software industry, pulp, nerd, geek"> 
+		<meta name="DC.Subject" content="web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry"> 
+		<meta name="page-topic" content="Science Fiction Web-Comic">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="dns-prefetch" href="//DevAbo.de">
+
+
+		<!-- TODO:
+		<link rel="shortcut icon" href="https://DevAbo.de/wp-content/themes/drewing2012/favicon.ico">
+		<link rel="canonical" href="https://DevAbo.de/2017/03/18/84-time-crystals/">
+		<link rel="alternate" type="application/rss+xml" title="DevAbo.de » Feed" href="https://DevAbo.de/feed/">
+		<script type="text/javascript" src="https://DevAbo.de/wp-content/plugins/cookie-law-info/js/cookielawinfo.js?ver=1.5.3"></script>
+		-->
+
 		<title>DevAbo.de | Graphic Novel | %s</title>
 		%s
 		%s
