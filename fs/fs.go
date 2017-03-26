@@ -207,7 +207,7 @@ func (html *HTML) getFooterNavi() string {
 	<a href="%s/rss.xml">RSS</a>
 	<a href="%s/archive.html">Archive</a>
 	<a href="%s/imprint.html">Imprint / Impressum</a>
-	`, p, p, p)
+	`, p, p, p, p)
 	if config.IsProd() {
 		h += analytics
 	}
@@ -486,15 +486,9 @@ nav a {
 const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
 const navWrapperFormat = `<nav>%s</nav>`
 const htmlFormat = `<!DOCTYPE html>
-<html>
-	<head profile="http://gmpg.org/xfn/11">
-		<meta http-equiv="imagetoolbar" content="no">
+<html lang="en" manifest="/cache.manifest" >
+	<head>
 		<meta http-equiv="content-type" content="text/html;charset=UTF-8">
-		<meta http-equiv="Language" content="en">
-		<meta http-equiv="Content-Language" content="en">
-		<meta http-equiv="cache-control" content="Private">
-		<meta http-equiv="pragma" content="no-cache">
-		<meta http-equiv="expires" content="0">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="robots" content="index,follow">
 		<meta name="author" content="Ingmar Drewing"> 
@@ -502,7 +496,6 @@ const htmlFormat = `<!DOCTYPE html>
 		<meta name="keywords" content="web comic, comic, cartoon, sci fi, satire, parody, science fiction, action, software industry, pulp, nerd, geek"> 
 		<meta name="DC.Subject" content="web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry"> 
 		<meta name="page-topic" content="Science Fiction Web-Comic">
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="dns-prefetch" href="https://DevAbo.de">
 		<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -645,13 +638,14 @@ func (o *Output) RssItems() string {
 
 func (o *Output) DateNow() string {
 	date := time.Now()
-	return date.Format(time.RFC1123)
+	return date.Format(time.RFC1123Z)
 }
 
 func (o *Output) Rss() string {
 	date := o.DateNow()
 	items := o.RssItems()
-	return fmt.Sprintf(rss, date, items)
+	relSelf := config.Servedrootpath() + "/feed/rss.xml"
+	return fmt.Sprintf(rss, relSelf, date, items)
 }
 
 var rss = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
@@ -674,9 +668,7 @@ var rss = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
       <height>32</height>
       <description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
     </image>
-	<icon>
-	</icon>
-	<atom:link href="https://DevAbo.de/rss.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="%s" rel="self" type="application/rss+xml" />
 	<link>https://DevAbo.de</link>
 	<description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
 	<lastBuildDate>%s</lastBuildDate>
@@ -695,7 +687,7 @@ var rssItem = `  <item>
     <pubDate>%s</pubDate>
     <dc:creator><![CDATA[Ingmar Drewing]]></dc:creator>
     <category><![CDATA[%s]]></category>
-    <guid isPermaLink="false">%s</guid>
+    <guid>%s/index.html</guid>
     <description><![CDATA[%s]]></description>
     <content:encoded><![CDATA[%s]]></content:encoded>
 

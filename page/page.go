@@ -164,7 +164,7 @@ func (p *Page) Date() string {
 	m, _ := strconv.Atoi(parts[2])
 	d, _ := strconv.Atoi(parts[3])
 	date := time.Date(y, time.Month(m), d, 20, 0, 0, 0, loc)
-	return date.Format(time.RFC1123)
+	return date.Format(time.RFC1123Z)
 }
 
 func (p *Page) Act() string {
