@@ -33,11 +33,19 @@ func Read(yamlPath string) {
 	conf = newConfig(yamlPath)
 }
 
+func IsProd() bool {
+	return Stage == "prod"
+}
+
+func IsTest() bool {
+	return Stage == "test"
+}
+
 func Servedrootpath() string {
-	if Stage == "prod" {
+	if IsProd() {
 		return conf.ServedProdrootpath
 	}
-	if Stage == "test" {
+	if IsTest() {
 		return conf.ServedTestrootpath
 	}
 	return conf.Servedrootpath

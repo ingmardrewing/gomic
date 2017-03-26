@@ -44,6 +44,12 @@ func (o *Output) WriteToFilesystem() {
 	o.writeNarrativePages()
 	o.writeCss()
 	o.writeArchive()
+	o.writeRss()
+}
+
+func (o *Output) writeRss() {
+	rss := o.Rss()
+	o.writeStringToFS(config.Rootpath()+"/rss.xml", rss)
 }
 
 func (o *Output) writeNarrativePages() {
@@ -129,7 +135,7 @@ func (o *Output) writeArchive() {
 	}
 
 	arc := fmt.Sprintf(`<ul class="archive">%s</ul>`, strings.Join(list, "\n"))
-	ah := NewArchiveHtml(arc)
+	ah := NewArchiveHtml(arc, config.Servedrootpath()+"/archive.html")
 	log.Println(ah.getContent())
 	o.writeStringToFS(config.Rootpath()+"/archive.html", ah.writePage())
 }
@@ -195,11 +201,17 @@ func (html *HTML) version() string {
 
 func (html *HTML) getFooterNavi() string {
 	p := config.Servedrootpath()
-	return fmt.Sprintf(`<a href="http://twitter.com/devabo_de">Twitter</a>
+	h := ""
+	h += fmt.Sprintf(`<a href="http://twitter.com/devabo_de">Twitter</a>
 	<a href="%s/about.html">About</a>
+	<a href="%s/rss.xml">RSS</a>
 	<a href="%s/archive.html">Archive</a>
 	<a href="%s/imprint.html">Imprint / Impressum</a>
 	`, p, p, p)
+	if config.IsProd() {
+		h += analytics
+	}
+	return h
 }
 
 func (html *HTML) getCssLink() string {
@@ -252,16 +264,18 @@ func (html *HTML) writePage() string {
 	header := html.getHeaderHtml()
 	disqus := ""
 	year := time.Now().Year()
-	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
+	canonicalLink := ""
+	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css, header, content, navi, disqus, year, footerNavi)
 }
 
 type ArchiveHtml struct {
 	HTML
 	content string
+	url     string
 }
 
-func NewArchiveHtml(content string) *ArchiveHtml {
-	return &ArchiveHtml{HTML{}, content}
+func NewArchiveHtml(content string, url string) *ArchiveHtml {
+	return &ArchiveHtml{HTML{}, content, url}
 }
 
 func (ah *ArchiveHtml) getContent() string {
@@ -276,8 +290,9 @@ func (ah *ArchiveHtml) writePage() string {
 	content := ah.getContent()
 	header := ah.getHeaderHtml()
 	disqus := ""
+	canonicalLink := fmt.Sprintf(`<link rel="canonical" href="%s">`, ah.url)
 	year := time.Now().Year()
-	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
+	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css, header, content, navi, disqus, year, footerNavi)
 }
 
 type NarrativePageHtml struct {
@@ -305,7 +320,8 @@ func (h *NarrativePageHtml) writePage() string {
 	header := h.getHeaderHtml()
 	disqus := h.getDisqus()
 	year := time.Now().Year()
-	return fmt.Sprintf(htmlFormat, title, meta, css, header, content, navi, disqus, year, footerNavi)
+	canonicalLink := fmt.Sprintf(`<link rel="canonical" href="%s">`, h.p.Path())
+	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css, header, content, navi, disqus, year, footerNavi)
 }
 
 func (h *NarrativePageHtml) getContent() string {
@@ -332,7 +348,7 @@ func (h *NarrativePageHtml) getNaviLink(vals ...string) string {
 
 func (h *NarrativePageHtml) getMetaHtml() string {
 	ms := h.p.GetMeta()
-	html := ""
+	html := h.HTML.getMetaHtml()
 	for _, m := range ms {
 		html += h.getHeaderLink(m...)
 	}
@@ -487,12 +503,13 @@ const htmlFormat = `<!DOCTYPE html>
 		<meta name="DC.Subject" content="web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry"> 
 		<meta name="page-topic" content="Science Fiction Web-Comic">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<link rel="dns-prefetch" href="//DevAbo.de">
+		<link rel="dns-prefetch" href="https://DevAbo.de">
+		%s
 
 
 		<!-- TODO:
+
 		<link rel="shortcut icon" href="https://DevAbo.de/wp-content/themes/drewing2012/favicon.ico">
-		<link rel="canonical" href="https://DevAbo.de/2017/03/18/84-time-crystals/">
 		<link rel="alternate" type="application/rss+xml" title="DevAbo.de » Feed" href="https://DevAbo.de/feed/">
 		<script type="text/javascript" src="https://DevAbo.de/wp-content/plugins/cookie-law-info/js/cookielawinfo.js?ver=1.5.3"></script>
 		-->
@@ -550,4 +567,115 @@ var disqus_config = function () {
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 })();
 </script>
+`
+
+var analytics = `
+<script>
+var gaProperty = 'UUA-49679648-1';
+var disableStr = 'ga-disable-' + gaProperty;
+if (document.cookie.indexOf(disableStr + '=true') > -1) {
+  window[disableStr] = true;
+}
+function gaOptout() {
+  document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+  window[disableStr] = true;
+}
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-49679648-1', 'devabo.de');
+  ga('set', 'anonymizeIp', true);
+  ga('require', 'displayfeatures');
+  ga('require', 'linkid', 'linkid.js');
+  ga('send', 'pageview');
+
+</script>`
+
+func (o *Output) RssItem(p *page.Page) string {
+	title := p.Title()
+	url := p.Path()
+	pubDate := p.Date()
+	act := p.Act()
+	description := p.Title()
+	content := fmt.Sprintf(`<img src="%s">`, p.ImgUrl())
+	thumbnailUrl := p.ThumnailUrl()
+	imageUrl := p.ImgUrl()
+	imageName := p.ImageFilename()
+	return fmt.Sprintf(rssItem, title, url, pubDate, act, url, description, content, thumbnailUrl, imageUrl, imageName, thumbnailUrl)
+}
+
+func (o *Output) RssItems() string {
+	h := ""
+	pgs := o.comic.GetPages()
+	// last 10 pages
+	l10 := pgs[len(pgs)-11:]
+
+	// reverse splice
+	for i := len(l10)/2 - 1; i >= 0; i-- {
+		opp := len(l10) - 1 - i
+		l10[i], l10[opp] = l10[opp], l10[i]
+	}
+	// generate rss for last 10 pages, reversed
+	for _, p := range l10 {
+		h += o.RssItem(p)
+	}
+	return h
+}
+
+func (o *Output) DateNow() string {
+	date := time.Now()
+	return date.Format(time.RFC1123)
+}
+
+func (o *Output) Rss() string {
+	date := o.DateNow()
+	items := o.RssItems()
+	return fmt.Sprintf(rss, date, items)
+}
+
+var rss = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>DevAbo.de</title>
+	<atom:link href="https://DevAbo.de/rss.xml" rel="self" type="application/rss+xml" />
+	<link>https://DevAbo.de</link>
+	<description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
+	<lastBuildDate>%s</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>weekly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>https://github.com/ingmardrewing/gomic</generator>
+%s
+	</channel>
+</rss>
+`
+
+var rssItem = `  <item>
+    <title>%s</title>
+    <link>%s</link>
+    <pubDate>%s</pubDate>
+    <dc:creator><![CDATA[Ingmar Drewing]]></dc:creator>
+    <category><![CDATA[%s]]></category>
+    <guid isPermaLink="false">%s</guid>
+    <description><![CDATA[%s]]></description>
+    <content:encoded><![CDATA[%s]]></content:encoded>
+
+    <media:thumbnail url="%s" />
+    <media:content url="%s" medium="image">
+      <media:title type="html">%s</media:title>
+      <media:thumbnail url="%s" />
+    </media:content>
+  </item>
 `

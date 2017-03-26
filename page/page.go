@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,20 +13,24 @@ import (
 )
 
 type Page struct {
-	title, path, imgUrl, disqusId string
-	first, prev, next, last       *Page
-	meta, navi                    [][]string
+	title, path, imgUrl, disqusId, act string
+	first, prev, next, last            *Page
+	meta, navi                         [][]string
 }
 
 func NewPageFromFilename(filename string) *Page {
 
-	var title, path, imgUrl, disqusId string
+	var title, path, imgUrl, disqusId, act string
 	for {
 
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("Enter title for %s: ", filename)
 		title, _ = reader.ReadString('\n')
 		title = strings.TrimSpace(title)
+
+		fmt.Printf("Enter act for %s: ", filename)
+		act, _ = reader.ReadString('\n')
+		act = strings.TrimSpace(act)
 
 		whitespace := regexp.MustCompile(`\s+`)
 		forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
@@ -57,7 +62,7 @@ func NewPageFromFilename(filename string) *Page {
 		fmt.Println("Okay, let's try again ...")
 	}
 
-	return &Page{title, path, imgUrl, disqusId, nil, nil, nil, nil, [][]string{}, [][]string{}}
+	return &Page{title, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func AskUser(question string) bool {
@@ -72,8 +77,9 @@ func NewPage(
 	title string,
 	path string,
 	imgUrl string,
-	disqusId string) *Page {
-	return &Page{title, path, imgUrl, disqusId,
+	disqusId string,
+	act string) *Page {
+	return &Page{title, path, imgUrl, disqusId, act,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 
 }
@@ -93,6 +99,11 @@ func (p *Page) DisqusId() string {
 
 func (p *Page) ImgUrl() string {
 	return p.imgUrl
+}
+
+func (p *Page) ThumnailUrl() string {
+	thumbUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/%s/thumb_%s", config.AwsDir(), p.ImageFilename())
+	return thumbUrl
 }
 
 func (p *Page) DisqusIdentifier() string {
@@ -144,6 +155,20 @@ func (p *Page) fillNavi() {
 	if p.last != nil {
 		p.addNavi("last", p.last.title, p.last.Path(), "newest &gt;")
 	}
+}
+
+func (p *Page) Date() string {
+	parts := strings.Split(p.FSPath(), "/")
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	y, _ := strconv.Atoi(parts[1])
+	m, _ := strconv.Atoi(parts[2])
+	d, _ := strconv.Atoi(parts[3])
+	date := time.Date(y, time.Month(m), d, 20, 0, 0, 0, loc)
+	return date.Format(time.RFC1123)
+}
+
+func (p *Page) Act() string {
+	return p.act
 }
 
 func (p *Page) IsLast() bool {

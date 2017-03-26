@@ -23,9 +23,11 @@ func (c *Comic) generatePages(rows *sql.Rows) {
 			path     sql.NullString
 			imgUrl   sql.NullString
 			disqusId sql.NullString
+			act      sql.NullString
+			id       sql.NullInt64
 		)
-		rows.Scan(&title, &path, &imgUrl, &disqusId)
-		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String)
+		rows.Scan(&title, &path, &imgUrl, &disqusId, &act, &id)
+		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String, act.String)
 		c.AddPage(p)
 	}
 }
