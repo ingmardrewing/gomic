@@ -6,10 +6,18 @@ import (
 	"os/exec"
 )
 
-func UploadDir(path string) {
-	cmd := "scp"
-	args := []string{"-r", path, "www.drewing.de@ssh.strato.de:devabo.de/"}
-	if err := exec.Command(cmd, args...).Run(); err != nil {
+func UploadTest() {
+	args := []string{"-r", "/Users/drewing/Sites/gomic", "www.drewing.de@ssh.strato.de:devabo.de/"}
+	upload("scp", args)
+}
+
+func UploadProd() {
+	args := []string{}
+	upload("upload_gomic_prod", args)
+}
+
+func upload(command string, args []string) {
+	if err := exec.Command(command, args...).Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

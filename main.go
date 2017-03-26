@@ -24,9 +24,10 @@ func main() {
 	output := fs.NewOutput(&comic)
 	output.WriteToFilesystem()
 
-	if config.Stage == "test" {
-		strato.UploadDir("/Users/drewing/Sites/gomic")
+	if config.IsTest() {
+		strato.UploadTest()
+	} else if config.IsProd() {
+		strato.UploadProd()
 	}
-
 	// TODO: connect to and update on  Twitter, FB, ...
 }
