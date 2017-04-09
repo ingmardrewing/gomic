@@ -33,6 +33,10 @@ func Read(yamlPath string) {
 	conf = newConfig(yamlPath)
 }
 
+func IsDev() bool {
+	return Stage == "dev"
+}
+
 func IsProd() bool {
 	return Stage == "prod"
 }
@@ -48,7 +52,10 @@ func Servedrootpath() string {
 	if IsTest() {
 		return conf.ServedTestrootpath
 	}
-	return conf.Servedrootpath
+	if IsDev() {
+		return conf.Servedrootpath
+	}
+	return ""
 }
 
 func Pages() []map[string]string {
@@ -98,9 +105,17 @@ func AwsDir() string {
 }
 
 func newConfig(yamlPath string) *cnf {
-	stg := flag.String("stage", "dev", "target stage")
+	stg := flag.String("stage", "", "target stage")
 	flag.Parse()
 	Stage = *stg
+	if Stage == "" {
+		fmt.Println(`Usage:
+
+		gomic -stage=<stage>
+
+where <stage> is one of dev, prod, test`)
+		os.Exit(0)
+	}
 
 	yamldata, err := ioutil.ReadFile(yamlPath)
 	if err != nil {
