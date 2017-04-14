@@ -218,6 +218,10 @@ func (hdw *htmlDocWrapper) addCopyrightNotifier(year string) {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("class", "copyright").AppendText(`All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-` + year + ` Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.`))
 }
 
+func (hdw *htmlDocWrapper) addCookieLawInfo() {
+	hdw.htmlDoc.AddToBody(createNode("div").Attr("id", "cookie-law-info-bar").AppendText(`This website uses cookies to improve your experience. We'll assume you're ok with this, but you can opt-out if you wish.<a href="#" id="cookie_action_close_header" class="medium cli-plugin-button cli-plugin-main-button">Accept</a> <a href="http://www.drewing.de/blog/impressum-imprint/" id="CONSTANT_OPEN_URL" target="_blank" class="cli-plugin-main-link">Read More</a>`))
+}
+
 func (hdw *htmlDocWrapper) addFaviconLinks() {
 	iconSizes := []string{
 		"32x32",
