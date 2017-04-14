@@ -156,10 +156,11 @@ func (o *Output) writeArchive() {
 }
 
 func (o *Output) writeCss() {
+	cg := newCss()
 	p := config.Rootpath() + "/css"
 	o.prepareFileSystem(p)
 	fp := p + "/style.css"
-	o.writeStringToFS(fp, css)
+	o.writeStringToFS(fp, cg.getCss())
 }
 
 func (o *Output) writeJs() {
