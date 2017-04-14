@@ -485,24 +485,6 @@ function l1hs(str){if(str.charAt(0)=="#"){str=str.substring(1,str.length);}else{
 			});
 `
 
-var rssItem = `  <item>
-    <title>%s</title>
-    <link>%s</link>
-    <pubDate>%s</pubDate>
-    <dc:creator><![CDATA[Ingmar Drewing]]></dc:creator>
-    <category><![CDATA[%s]]></category>
-    <guid>%s/index.html</guid>
-    <description><![CDATA[%s]]></description>
-    <content:encoded><![CDATA[%s]]></content:encoded>
-
-    <media:thumbnail url="%s" />
-    <media:content url="%s" medium="image">
-      <media:title type="html">%s</media:title>
-      <media:thumbnail url="%s" />
-    </media:content>
-  </item>
-`
-
 var imprint = `
 <h3>Angaben nach TDG:</h3>
 

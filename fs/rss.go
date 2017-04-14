@@ -77,3 +77,21 @@ var rssTemplate = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
 	</channel>
 </rss>
 `
+
+var rssItem = `  <item>
+    <title>%s</title>
+    <link>%s</link>
+    <pubDate>%s</pubDate>
+    <dc:creator><![CDATA[Ingmar Drewing]]></dc:creator>
+    <category><![CDATA[%s]]></category>
+    <guid>%s/index.html</guid>
+    <description><![CDATA[%s]]></description>
+    <content:encoded><![CDATA[%s]]></content:encoded>
+
+    <media:thumbnail url="%s" />
+    <media:content url="%s" medium="image">
+      <media:title type="html">%s</media:title>
+      <media:thumbnail url="%s" />
+    </media:content>
+  </item>
+`
