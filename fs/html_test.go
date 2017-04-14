@@ -143,7 +143,7 @@ func TestAddGoogleApiLinkToJQuery(t *testing.T) {
 
 func TestAddCopyrightNotifier(t *testing.T) {
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addCopyrightNotifier()
+	hdw.addCopyrightNotifier("2017")
 
 	txt := hdw.Render()
 	expected := `<!doctype html>
