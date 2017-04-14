@@ -336,17 +336,29 @@ func NewNarrativePageHtml(p *page.Page) *NarrativePageHtml {
 }
 
 func (h *NarrativePageHtml) writePage() string {
-	css_js := h.getCssLink() + h.getJsLink()
-	meta := h.getMetaHtml()
-	navi := h.getNaviHtml()
-	title := h.p.Title()
-	footerNavi := h.getFooterNavi()
-	content := h.getContent()
-	header := h.getHeaderHtml()
-	disqus := h.getDisqus()
-	year := time.Now().Year()
-	canonicalLink := fmt.Sprintf(`<link rel="canonical" href="%s">`, h.p.Path())
-	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css_js, header, content, navi, disqus, year, footerNavi)
+	hdw := newHtmlDocWrapper()
+	hdw.Init()
+
+	css_path := config.Servedrootpath() + "/css/style.css?version=" + hdw.Version()
+	hdw.AddToHead(createNode("link").Attr("rel", "stylesheet").Attr("href", css_path).Attr("type", "text/css"))
+	hdw.AddToHead(createNode("link").Attr("rel", "canonical").Attr("href", h.p.Path()))
+
+	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
+	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
+	hdw.AddTitle(h.p.Title())
+
+	header := createText(h.getHeaderHtml())
+	hdw.AddToBody(header)
+
+	main := createNode("main")
+	main.AppendText(h.getContent())
+	main.AppendText(h.getNaviHtml())
+	main.AppendText(h.getDisqus())
+
+	hdw.AddToBody(main)
+	hdw.AddFooterNavi(h.getFooterNavi())
+
+	return hdw.Render()
 }
 
 func (h *NarrativePageHtml) getContent() string {

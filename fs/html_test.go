@@ -113,12 +113,11 @@ func TestGenerateIconLinks(t *testing.T) {
 	if txt != expected {
 		t.Error(fe(expected, txt))
 	}
-
 }
 
 func TestGenerateTitle(t *testing.T) {
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addTitle("Hello World")
+	hdw.AddTitle("Hello World")
 	txt := hdw.Render()
 	expected := `<!doctype html>
 <html lang="en"><head><title>Hello World</title></head><body></body></html>`
@@ -169,7 +168,7 @@ func TestAddCokieLawInfo(t *testing.T) {
 
 func TestAddFooterNavi(t *testing.T) {
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addFooterNavi(`<ul><li><a href="test.html">test</a></li></ul>`)
+	hdw.AddFooterNavi(`<ul><li><a href="test.html">test</a></li></ul>`)
 
 	txt := hdw.Render()
 	expected := `<!doctype html>

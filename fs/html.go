@@ -3,6 +3,7 @@ package fs
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type node interface {
@@ -165,6 +166,11 @@ func isStandAloneTag(tagname string) bool {
 
 type htmlDocWrapperI interface {
 	Render() string
+	Version() string
+	AddToHead(n node)
+	AddToBody(n node)
+	AddTitle(txt string)
+	AddFooterNavi(txt string)
 	Init()
 }
 
@@ -188,7 +194,7 @@ func (hdw *htmlDocWrapper) addGoogleApiLinkToJQuery() {
 	hdw.htmlDoc.AddToHead(createNode("script").Attr("src", "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"))
 }
 
-func (hdw *htmlDocWrapper) addTitle(txt string) {
+func (hdw *htmlDocWrapper) AddTitle(txt string) {
 	hdw.htmlDoc.AddToHead(createNode("title").AppendText(txt))
 }
 
@@ -222,7 +228,7 @@ func (hdw *htmlDocWrapper) addCookieLawInfo() {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("id", "cookie-law-info-bar").AppendText(`This website uses cookies to improve your experience. We'll assume you're ok with this, but you can opt-out if you wish.<a href="#" id="cookie_action_close_header" class="medium cli-plugin-button cli-plugin-main-button">Accept</a> <a href="http://www.drewing.de/blog/impressum-imprint/" id="CONSTANT_OPEN_URL" target="_blank" class="cli-plugin-main-link">Read More</a>`))
 }
 
-func (hdw *htmlDocWrapper) addFooterNavi(navi string) {
+func (hdw *htmlDocWrapper) AddFooterNavi(navi string) {
 	n := createNode("footer")
 	n.AppendTag("nav").AppendText(navi)
 	hdw.htmlDoc.AddToBody(n)
@@ -242,6 +248,21 @@ func (hdw *htmlDocWrapper) addFaviconLinks() {
 		l.Attr("href", "/favicon-"+s+".png")
 		hdw.htmlDoc.AddToHead(l)
 	}
+}
+
+func (hdw *htmlDocWrapper) Version() string {
+	t := time.Now()
+	return fmt.Sprintf("%d%02d%02dT%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second())
+}
+
+func (hdw *htmlDocWrapper) AddToBody(n node) {
+	hdw.htmlDoc.AddToBody(n)
+}
+
+func (hdw *htmlDocWrapper) AddToHead(n node) {
+	hdw.htmlDoc.AddToHead(n)
 }
 
 func (hdw *htmlDocWrapper) addAndroidIconLinks() {
