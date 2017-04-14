@@ -43,6 +43,18 @@ func (c *Comic) AddPage(p *page.Page) {
 	c.pages = append(c.pages, p)
 }
 
+func (c *Comic) Get10LastComicPagesNewestFirst() []*page.Page {
+	// get splice with last 10 pages
+	last10 := c.pages[len(c.pages)-11:]
+
+	// reorder them, so last issued is first in splice
+	for i := len(last10)/2 - 1; i >= 0; i-- {
+		opp := len(last10) - 1 - i
+		last10[i], last10[opp] = last10[opp], last10[i]
+	}
+	return last10
+}
+
 func (c *Comic) ConnectPages() {
 	for i, p := range c.pages {
 		p.SetRels(

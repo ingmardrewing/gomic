@@ -62,10 +62,10 @@ func (o *Output) writeImprint() {
 }
 
 func (o *Output) writeRss() {
-	rss := o.Rss()
+	rss := newRss(o.comic)
 	path := config.Rootpath() + "/feed/rss.xml"
 	log.Println("Writing rss: ", path)
-	o.writeStringToFS(path, rss)
+	o.writeStringToFS(path, rss.Rss())
 }
 
 func (o *Output) writeNarrativePages() {
@@ -433,7 +433,7 @@ func (h *NarrativePageHtml) getNaviHtml() string {
 }
 
 func (h *NarrativePageHtml) getNaviLink(vals ...string) string {
-	return fmt.Sprintf(`<a rel="%s" title="%s" href="%s">%s</a>`, vals)
+	return fmt.Sprintf(`<a rel="%s" title="%s" href="%s">%s</a>`, vals[0], vals[1], vals[2], vals[3])
 }
 
 func (h *NarrativePageHtml) getMetaHtml() string {
@@ -474,45 +474,7 @@ func (h *NarrativePageHtml) getDisqusUrl() string {
 	return h.p.Path() + "/"
 }
 
-func (o *Output) RssItem(p *page.Page) string {
-	title := p.Title()
-	url := p.Path()
-	pubDate := p.Date()
-	act := p.Act()
-	description := p.Title()
-	content := fmt.Sprintf(`<img src="%s">`, p.ImgUrl())
-	thumbnailUrl := p.ThumnailUrl()
-	imageUrl := p.ImgUrl()
-	imageName := p.ImageFilename()
-	return fmt.Sprintf(rssItem, title, url, pubDate, act, url, description, content, thumbnailUrl, imageUrl, imageName, thumbnailUrl)
-}
-
-func (o *Output) RssItems() string {
-	h := ""
-	pgs := o.comic.GetPages()
-	// last 10 pages
-	l10 := pgs[len(pgs)-11:]
-
-	// reverse splice
-	for i := len(l10)/2 - 1; i >= 0; i-- {
-		opp := len(l10) - 1 - i
-		l10[i], l10[opp] = l10[opp], l10[i]
-	}
-	// generate rss for last 10 pages, reversed
-	for _, p := range l10 {
-		h += o.RssItem(p)
-	}
-	return h
-}
-
-func (o *Output) DateNow() string {
+func DateNow() string {
 	date := time.Now()
 	return date.Format(time.RFC1123Z)
-}
-
-func (o *Output) Rss() string {
-	date := o.DateNow()
-	items := o.RssItems()
-	relSelf := config.Servedrootpath() + "/feed/rss.xml"
-	return fmt.Sprintf(rss, relSelf, date, items)
 }

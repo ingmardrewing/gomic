@@ -485,39 +485,6 @@ function l1hs(str){if(str.charAt(0)=="#"){str=str.substring(1,str.length);}else{
 			});
 `
 
-var rss = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
-	xmlns:content="http://purl.org/rss/1.0/modules/content/"
-	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:atom="http://www.w3.org/2005/Atom"
-	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-	xmlns:media="http://search.yahoo.com/mrss/"
-	>
-
-<channel>
-	<title>DevAbo.de</title>
-    <image>
-      <url>https://devabo.de/favicon-32x32.png</url>
-      <title>DevAbo.de</title>
-      <link>https://devabo.de</link>
-      <width>32</width>
-      <height>32</height>
-      <description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
-    </image>
-	<atom:link href="%s" rel="self" type="application/rss+xml" />
-	<link>https://DevAbo.de</link>
-	<description>A science-fiction webcomic about the lives of software developers in the far, funny and dystopian future</description>
-	<lastBuildDate>%s</lastBuildDate>
-	<language>en-US</language>
-	<sy:updatePeriod>weekly</sy:updatePeriod>
-	<sy:updateFrequency>1</sy:updateFrequency>
-	<generator>https://github.com/ingmardrewing/gomic</generator>
-%s
-	</channel>
-</rss>
-`
-
 var rssItem = `  <item>
     <title>%s</title>
     <link>%s</link>
