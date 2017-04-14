@@ -11,6 +11,8 @@ type node interface {
 	AppendTag(txt string) node
 	Attr(name string, value string) node
 	Render() string
+	RenderReadable() string
+	renderReadable(indent string) string
 }
 
 type htmlNode struct {
@@ -34,12 +36,49 @@ func (n *htmlNode) setTxt(txt string) node {
 }
 
 func (n *htmlNode) Render() string {
+	attrs := n.getAttrs()
+	if len(n.txt) > 0 {
+		return n.txt
+	} else if len(n.children) == 0 && isStandAloneTag(n.name) {
+		return fmt.Sprintf("<%s%s>", n.name, attrs)
+	}
+	txt := n.getInner()
+	return fmt.Sprintf("<%s%s>%s</%s>", n.name, attrs, txt, n.name)
+}
+
+func (n *htmlNode) RenderReadable() string {
 	if len(n.txt) > 0 {
 		return n.txt
 	}
-	txt := n.getInner()
+	txt := n.getInnerReadable("  ")
 	attrs := n.getAttrs()
-	return fmt.Sprintf("<%s%s>%s</%s>", n.name, attrs, txt, n.name)
+	return fmt.Sprintf("<%s%s>%s\n</%s>",
+		n.name, attrs,
+		txt,
+		n.name)
+}
+
+func (n *htmlNode) renderReadable(indent string) string {
+	attrs := n.getAttrs()
+	if len(n.txt) > 0 {
+		return "\n" + indent + n.txt
+	} else if len(n.children) == 0 && isStandAloneTag(n.name) {
+		return fmt.Sprintf("\n%s<%s%s />",
+			indent, n.name, attrs)
+	}
+	txt := n.getInnerReadable(indent + "  ")
+	return fmt.Sprintf("\n%s<%s%s>%s\n%s</%s>",
+		indent, n.name, attrs,
+		txt,
+		indent, n.name)
+}
+
+func (n *htmlNode) getInnerReadable(indent string) string {
+	txt := ""
+	for _, c := range n.children {
+		txt += indent + c.renderReadable(indent)
+	}
+	return txt
 }
 
 func (n *htmlNode) getInner() string {
@@ -92,7 +131,7 @@ type html struct {
 	body    node
 }
 
-func newHtml() htmlDoc {
+func newHtmlDoc() htmlDoc {
 	return &html{
 		"<!doctype html>",
 		createNode("head"),
@@ -112,4 +151,14 @@ func (h *html) AddToHead(n node) {
 
 func (h *html) AddToBody(n node) {
 	h.body.Append(n)
+}
+
+func isStandAloneTag(tagname string) bool {
+	standalones := []string{"img", "link"}
+	for _, t := range standalones {
+		if t == tagname {
+			return true
+		}
+	}
+	return false
 }

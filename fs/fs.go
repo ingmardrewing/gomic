@@ -409,6 +409,79 @@ func (h *NarrativePageHtml) getDisqusUrl() string {
 	return h.p.Path() + "/"
 }
 
+type htmlDocWrapperI interface {
+	Render() string
+	Init()
+}
+
+type htmlDocWrapper struct {
+	htmlDoc htmlDoc
+}
+
+func newHtmlDocWrapper() htmlDocWrapperI {
+	return &htmlDocWrapper{newHtmlDoc()}
+}
+
+func (hdw *htmlDocWrapper) Init() {
+	hdw.addAndroidIconLinks()
+	hdw.addFaviconLinks()
+	hdw.addAppleIconLinks()
+}
+
+func (hdw *htmlDocWrapper) addFaviconLinks() {
+	iconSizes := []string{
+		"32x32",
+		"96x96",
+		"16x16",
+	}
+	for _, s := range iconSizes {
+		l := createNode("link")
+		l.Attr("rel", "icon")
+		l.Attr("type", "image/png")
+		l.Attr("sizes", s)
+		l.Attr("href", "/favicon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+}
+func (hdw *htmlDocWrapper) addAndroidIconLinks() {
+	androidSizes := []string{
+		"192x192",
+	}
+	for _, s := range androidSizes {
+		l := createNode("link")
+		l.Attr("rel", "icon")
+		l.Attr("type", "image/png")
+		l.Attr("sizes", s)
+		l.Attr("href", "/android-icon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+
+}
+func (hdw *htmlDocWrapper) addAppleIconLinks() {
+	appleSizes := []string{
+		"57x57",
+		"60x60",
+		"72x72",
+		"76x76",
+		"114x114",
+		"120x120",
+		"144x144",
+		"152x152",
+		"180x180",
+	}
+	for _, s := range appleSizes {
+		l := createNode("link")
+		l.Attr("rel", "apple-touch-icon")
+		l.Attr("sizes", s)
+		l.Attr("href", "/apple-icon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+}
+
+func (hdw *htmlDocWrapper) Render() string {
+	return hdw.htmlDoc.Render()
+}
+
 const css = `
 .copyright,
 header {
@@ -613,6 +686,7 @@ nav a {
 `
 const imageWrapperFormat = `<a href="%s" rel="next" title="%s">%s</a>`
 const navWrapperFormat = `<nav>%s</nav>`
+
 const htmlFormat = `<!DOCTYPE html>
 <html itemscope itemtype="http://schema.org/Article" lang="en" manifest="/cache.manifest" >
 	<head>
@@ -625,6 +699,7 @@ const htmlFormat = `<!DOCTYPE html>
 		<meta name="DC.Subject" content="web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry"> 
 		<meta name="page-topic" content="Science Fiction Web-Comic">
 		<link rel="dns-prefetch" href="https://DevAbo.de">
+
 		<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
