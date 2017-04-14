@@ -167,6 +167,19 @@ func TestAddCokieLawInfo(t *testing.T) {
 	}
 }
 
+func TestAddFooterNavi(t *testing.T) {
+	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
+	hdw.addFooterNavi(`<ul><li><a href="test.html">test</a></li></ul>`)
+
+	txt := hdw.Render()
+	expected := `<!doctype html>
+<html lang="en"><head></head><body><footer><nav><ul><li><a href="test.html">test</a></li></ul></nav></footer></body></html>`
+
+	if txt != expected {
+		t.Error(fe(expected, txt))
+	}
+}
+
 func TestGoogleMetaData(t *testing.T) {
 	google_data := []string{
 		"name", "The Name or Title Here",

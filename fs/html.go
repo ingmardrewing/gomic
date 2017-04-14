@@ -222,6 +222,12 @@ func (hdw *htmlDocWrapper) addCookieLawInfo() {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("id", "cookie-law-info-bar").AppendText(`This website uses cookies to improve your experience. We'll assume you're ok with this, but you can opt-out if you wish.<a href="#" id="cookie_action_close_header" class="medium cli-plugin-button cli-plugin-main-button">Accept</a> <a href="http://www.drewing.de/blog/impressum-imprint/" id="CONSTANT_OPEN_URL" target="_blank" class="cli-plugin-main-link">Read More</a>`))
 }
 
+func (hdw *htmlDocWrapper) addFooterNavi(navi string) {
+	n := createNode("footer")
+	n.AppendTag("nav").AppendText(navi)
+	hdw.htmlDoc.AddToBody(n)
+}
+
 func (hdw *htmlDocWrapper) addFaviconLinks() {
 	iconSizes := []string{
 		"32x32",
