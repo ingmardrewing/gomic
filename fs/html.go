@@ -154,11 +154,117 @@ func (h *html) AddToBody(n node) {
 }
 
 func isStandAloneTag(tagname string) bool {
-	standalones := []string{"img", "link"}
+	standalones := []string{"img", "link", "meta"}
 	for _, t := range standalones {
 		if t == tagname {
 			return true
 		}
 	}
 	return false
+}
+
+type htmlDocWrapperI interface {
+	Render() string
+	Init()
+}
+
+type htmlDocWrapper struct {
+	htmlDoc htmlDoc
+}
+
+func newHtmlDocWrapper() htmlDocWrapperI {
+	return &htmlDocWrapper{newHtmlDoc()}
+}
+
+func (hdw *htmlDocWrapper) Init() {
+	hdw.addAndroidIconLinks()
+	hdw.addFaviconLinks()
+	hdw.addAppleIconLinks()
+	hdw.addStandardMeta()
+	hdw.addGoogleApiLinkToJQuery()
+}
+
+func (hdw *htmlDocWrapper) addGoogleApiLinkToJQuery() {
+	hdw.htmlDoc.AddToHead(createNode("script").Attr("src", "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"))
+}
+
+func (hdw *htmlDocWrapper) addTitle(txt string) {
+	hdw.htmlDoc.AddToHead(createNode("title").AppendText(txt))
+}
+
+func (hdw *htmlDocWrapper) addStandardMeta() {
+	name_metas := []string{
+		"viewport", "width=device-width, initial-scale=1.0",
+		"robots", "index,follow",
+		"author", "Ingmar Drewing",
+		"publisher", "Ingmar Drewing",
+		"keywords", "web comic, comic, cartoon, sci fi, satire, parody, science fiction, action, software industry, pulp, nerd, geek",
+		"DC.Subject", "web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry",
+		"page-topic", "Science Fiction Web-Comic",
+	}
+	hdw.addNameValueMetas(name_metas)
+	hdw.htmlDoc.AddToHead(createNode("meta").Attr("http-equiv", "content-type").Attr("content", "text/html;charset=UTF-8"))
+}
+
+func (hdw *htmlDocWrapper) addNameValueMetas(metaData []string) {
+	for i := 0; i < len(metaData); i += 2 {
+		m := createNode("meta")
+		m.Attr(metaData[i], metaData[i+1])
+		hdw.htmlDoc.AddToHead(m)
+	}
+}
+
+func (hdw *htmlDocWrapper) addFaviconLinks() {
+	iconSizes := []string{
+		"32x32",
+		"96x96",
+		"16x16",
+	}
+	for _, s := range iconSizes {
+		l := createNode("link")
+		l.Attr("rel", "icon")
+		l.Attr("type", "image/png")
+		l.Attr("sizes", s)
+		l.Attr("href", "/favicon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+}
+
+func (hdw *htmlDocWrapper) addAndroidIconLinks() {
+	androidSizes := []string{
+		"192x192",
+	}
+	for _, s := range androidSizes {
+		l := createNode("link")
+		l.Attr("rel", "icon")
+		l.Attr("type", "image/png")
+		l.Attr("sizes", s)
+		l.Attr("href", "/android-icon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+}
+
+func (hdw *htmlDocWrapper) addAppleIconLinks() {
+	appleSizes := []string{
+		"57x57",
+		"60x60",
+		"72x72",
+		"76x76",
+		"114x114",
+		"120x120",
+		"144x144",
+		"152x152",
+		"180x180",
+	}
+	for _, s := range appleSizes {
+		l := createNode("link")
+		l.Attr("rel", "apple-touch-icon")
+		l.Attr("sizes", s)
+		l.Attr("href", "/apple-icon-"+s+".png")
+		hdw.htmlDoc.AddToHead(l)
+	}
+}
+
+func (hdw *htmlDocWrapper) Render() string {
+	return hdw.htmlDoc.Render()
 }
