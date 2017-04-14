@@ -214,6 +214,10 @@ func (hdw *htmlDocWrapper) addNameValueMetas(metaData []string) {
 	}
 }
 
+func (hdw *htmlDocWrapper) addCopyrightNotifier() {
+	hdw.htmlDoc.AddToBody(createNode("div").Attr("class", "copyright").AppendText(`All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-2017 Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.`))
+}
+
 func (hdw *htmlDocWrapper) addFaviconLinks() {
 	iconSizes := []string{
 		"32x32",

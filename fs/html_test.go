@@ -141,6 +141,20 @@ func TestAddGoogleApiLinkToJQuery(t *testing.T) {
 
 }
 
+func TestAddCopyrightNotifier(t *testing.T) {
+	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
+	hdw.addCopyrightNotifier()
+
+	txt := hdw.Render()
+	expected := `<!doctype html>
+<html lang="en"><head></head><body><div class="copyright">All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-2017 Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.</div></body></html>`
+
+	if txt != expected {
+		t.Error(fe(expected, txt))
+	}
+
+}
+
 func TestGoogleMetaData(t *testing.T) {
 	google_data := []string{
 		"name", "The Name or Title Here",
