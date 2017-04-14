@@ -348,7 +348,7 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
 	hdw.AddTitle(h.p.Title())
 
-	header := createText(h.getHeaderHtml())
+	header := createNode("header").AppendText(h.getHeaderHtml())
 	hdw.AddToBody(header)
 
 	main := createNode("main")
