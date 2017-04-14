@@ -163,10 +163,11 @@ func (o *Output) writeCss() {
 }
 
 func (o *Output) writeJs() {
+	js := newJs()
 	p := config.Rootpath() + "/js"
 	o.prepareFileSystem(p)
 	fp := p + "/script.js"
-	o.writeStringToFS(fp, js)
+	o.writeStringToFS(fp, js.getJs())
 }
 
 func (o *Output) writePageToFileSystem(p *page.Page) {
@@ -230,9 +231,9 @@ func (html *HTML) getFooterNavi() string {
 	<a href="%s/archive.html">Archive</a>
 	<a href="%s/imprint.html">Imprint / Impressum</a>
 	`, p, p, p, p)
-	if config.IsProd() {
-		h += analytics
-	}
+
+	js := newJs()
+	h += js.getAnalytics()
 	return h
 }
 
@@ -456,11 +457,12 @@ func (h *NarrativePageHtml) getHeaderHtml() string {
 }
 
 func (h *NarrativePageHtml) getDisqus() string {
-	title := h.p.Title()
-	url := h.getDisqusUrl()
-	identifier := h.getDisqusIdentifier()
-	disq := fmt.Sprintf(disqus_universal_code, title, url, identifier)
-	return disq
+	js := newJs()
+	return js.getDisqus(
+		h.p.Title(),
+		h.getDisqusUrl(),
+		h.getDisqusIdentifier(),
+	)
 }
 
 func (h *NarrativePageHtml) getDisqusIdentifier() string {
