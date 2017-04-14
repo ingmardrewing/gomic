@@ -281,17 +281,30 @@ func (html *HTML) getContent() string {
 }
 
 func (html *HTML) writePage() string {
-	css_js := html.getCssLink() + html.getJsLink()
-	meta := html.getMetaHtml()
-	navi := html.getNaviHtml()
-	title := html.getTitle()
-	footerNavi := html.getFooterNavi()
-	content := html.getContent()
-	header := html.getHeaderHtml()
-	disqus := ""
-	year := time.Now().Year()
-	canonicalLink := ""
-	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css_js, header, content, navi, disqus, year, footerNavi)
+	hdw := newHtmlDocWrapper()
+	hdw.Init()
+
+	css_path := config.Servedrootpath() + "/css/style.css?version=" + hdw.Version()
+	hdw.AddToHead(createNode("link").Attr("rel", "stylesheet").Attr("href", css_path).Attr("type", "text/css"))
+
+	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
+	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
+	hdw.AddTitle("Document Title")
+
+	header := createNode("header").AppendText(html.getHeaderHtml())
+	hdw.AddToBody(header)
+	hdw.AddToBody(createText("<!-- have you not -->"))
+
+	main := createNode("main")
+	main.AppendText(html.getContent())
+	main.AppendText(html.getNaviHtml())
+	hdw.AddToBody(main)
+
+	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+
+	hdw.AddFooterNavi(html.getFooterNavi())
+
+	return hdw.Render()
 }
 
 type DataHtml struct {
@@ -307,18 +320,31 @@ func NewDataHtml(content string, url string) *DataHtml {
 func (ah *DataHtml) getContent() string {
 	return ah.content
 }
+
 func (ah *DataHtml) writePage() string {
-	css_js := ah.getCssLink() + ah.getJsLink()
-	meta := ah.getMetaHtml()
-	navi := ah.getNaviHtml()
-	title := ah.getTitle()
-	footerNavi := ah.getFooterNavi()
-	content := ah.getContent()
-	header := ah.getHeaderHtml()
-	disqus := ""
-	canonicalLink := fmt.Sprintf(`<link rel="canonical" href="%s">`, ah.url)
-	year := time.Now().Year()
-	return fmt.Sprintf(htmlFormat, canonicalLink, title, meta, css_js, header, content, navi, disqus, year, footerNavi)
+	hdw := newHtmlDocWrapper()
+	hdw.Init()
+
+	css_path := config.Servedrootpath() + "/css/style.css?version=" + hdw.Version()
+	hdw.AddToHead(createNode("link").Attr("rel", "stylesheet").Attr("href", css_path).Attr("type", "text/css"))
+
+	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
+	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
+
+	hdw.AddTitle(ah.getTitle())
+
+	header := createNode("header").AppendText(ah.getHeaderHtml())
+	hdw.AddToBody(header)
+
+	main := createNode("main")
+	main.AppendText(ah.getContent())
+	hdw.AddToBody(main)
+
+	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+
+	hdw.AddFooterNavi(ah.getFooterNavi())
+
+	return hdw.Render()
 }
 
 type NarrativePageHtml struct {
@@ -352,7 +378,6 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToBody(header)
 
 	main := createNode("main")
-	main.Append(createText("<!-- test 1, 2 -->"))
 	main.AppendText(h.getContent())
 	main.AppendText(h.getNaviHtml())
 	main.AppendText(h.getDisqus())
