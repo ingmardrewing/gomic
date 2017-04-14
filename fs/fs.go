@@ -53,12 +53,12 @@ func (o *Output) WriteToFilesystem() {
 
 func (o *Output) writeAbout() {
 	ah := NewDataHtml(about, config.Servedrootpath()+"/about.html")
-	o.writeStringToFS(config.Rootpath()+"/about.html", ah.writePage())
+	o.writeStringToFS(config.Rootpath()+"/about.html", ah.writePage("About"))
 }
 
 func (o *Output) writeImprint() {
 	ah := NewDataHtml(imprint, config.Servedrootpath()+"/imprint.html")
-	o.writeStringToFS(config.Rootpath()+"/imprint.html", ah.writePage())
+	o.writeStringToFS(config.Rootpath()+"/imprint.html", ah.writePage("Imprint"))
 }
 
 func (o *Output) writeRss() {
@@ -150,7 +150,7 @@ func (o *Output) writeArchive() {
 
 	arc := fmt.Sprintf(`<ul class="archive">%s</ul>`, strings.Join(list, "\n"))
 	ah := NewDataHtml(arc, config.Servedrootpath()+"/archive.html")
-	o.writeStringToFS(config.Rootpath()+"/archive.html", ah.writePage())
+	o.writeStringToFS(config.Rootpath()+"/archive.html", ah.writePage("Archive"))
 }
 
 func (o *Output) writeCss() {
@@ -289,7 +289,7 @@ func (html *HTML) writePage() string {
 
 	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
 	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
-	hdw.AddTitle("Document Title")
+	hdw.AddTitle("DevAbo.de | Graphic Novel")
 
 	header := createNode("header").AppendText(html.getHeaderHtml())
 	hdw.AddToBody(header)
@@ -321,7 +321,7 @@ func (ah *DataHtml) getContent() string {
 	return ah.content
 }
 
-func (ah *DataHtml) writePage() string {
+func (ah *DataHtml) writePage(title string) string {
 	hdw := newHtmlDocWrapper()
 	hdw.Init()
 
@@ -331,7 +331,7 @@ func (ah *DataHtml) writePage() string {
 	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
 	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
 
-	hdw.AddTitle(ah.getTitle())
+	hdw.AddTitle("DevAbo.de | Graphic Novel | " + title)
 
 	header := createNode("header").AppendText(ah.getHeaderHtml())
 	hdw.AddToBody(header)
@@ -372,7 +372,7 @@ func (h *NarrativePageHtml) writePage() string {
 
 	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
 	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
-	hdw.AddTitle(h.p.Title())
+	hdw.AddTitle("DevAbo.de | Graphic Novel | " + h.p.Title())
 
 	header := createNode("header").AppendText(h.getHeaderHtml())
 	hdw.AddToBody(header)
@@ -900,19 +900,19 @@ DevAbo.de will be updated every 1st and 15th day of every month, though I am try
 
 
 <h3><a name="Bram">Bram</a></h3>
-<img src="http://DevAbo.de/wp-content/uploads/2014/10/DevAbode_Bram.png" alt="DevAbo.de character Bram, comic, graphic novel, web comic, sci-fi, science-fiction" width="300" height="340" class="alignnone size-full wp-image-481" style="float:left; margin-right:25px; margin-bottom:15px;" />Bram has spent over a millennium in cryo stasis. <a href="#Ada">Ada</a> found him in the ancient ruins and ended his cryostatic slumber out of curiosity (and the possibility that he might have taken something of value into the cryo capsule). He woke up healthy, though a big part of his episodic memory is lost to him and resurfaces partially and slowly. <br /><br />
+Bram has spent over a millennium in cryo stasis. <a href="#Ada">Ada</a> found him in the ancient ruins and ended his cryostatic slumber out of curiosity (and the possibility that he might have taken something of value into the cryo capsule). He woke up healthy, though a big part of his episodic memory is lost to him and resurfaces partially and slowly. <br /><br />
 Some parts of his past that came back to him showed that he was some kind of <a href="http://devabo.de/2014/04/01/flashback/">technical officer</a>. He first didn't recall the aggressor he was fighting against. The memory of this came back to him while he was teaching Ada how to get in touch in with the calculating space and she <a href="http://devabo.de/2014/07/15/22-backup/">accidentally changed parts of his memory</a>.<br /><br />
 Bram was about 35 years old when he was put into cryo slumber. He is still failing to remember the reason and circumstances of him being put into cryostasis, though it's likely that it has something to do with the war he was fighting in the past &hellip;<br /><br /><br /><br />
 
 
 <h3><a name="Ada">Ada</a></h3>
-<img src="http://DevAbo.de/wp-content/uploads/2014/10/DevAbode_Ada.png" alt="DevAbode.de Ada, scifi, science-fiction, character, comic, webcomic, graphic novel" width="300" height="341" class="alignnone size-full wp-image-461" style="float:right; margin-left:25px; margin-bottom:15px;" />Ada is a developer of the abode as well as an elite fighter. At the beginning of the story she is 27 years old.<br />
+Ada is a developer of the abode as well as an elite fighter. At the beginning of the story she is 27 years old.<br />
 On routine checks along the outer defense perimeters of the abode she found entries to some rather well preserved buildings of the ancients and started to sell the artifacts she found there to <a href="#MasterBranch">Master Branch</a>. The business relationship developed and she regularly helped to retrieve artifacts for Master Branch. The business already brought her into conflict with her superiors and though she usually tries to keep out of trouble with the administration of the abode, she sneaked out into the ruins occasionally to "check for some strange client activity", as she put it in her report.<br />
 Apart from this she takes her duty very seriously and is a good comrade. If a friend of her is in danger she's more than ready to risk her own life to free him. And she expects the same behaviour from everyone of her comrades.
 <br /><br /><br /><br />
 
 <h3><a name="MasterBranch">Master Branch</a></h3>
-<img src="http://DevAbo.de/wp-content/uploads/2013/07/DevAbode_master_branch.png" alt="DevAbo.de character: Master Branch" width="300" height="340" class="alignnone size-full wp-image-450" style="float:left; margin-right:25px; margin-bottom:15px;" /> Master Branch is a thrirty years old JMonk and, like all of these pious people, believes strongly in <a href="http://en.wikipedia.org/wiki/Type_system#Static_type-checking">static typing</a>. Since that faith is mercilessly tested every time reality interferes with their believe system, the JMonks are also on the lookout for a sign from a higher power. They have a prophecy that one day a man would come, a Messiah, who will bring them true productivity. But, until this comes true, their only joy will be the incredible beauty of generics and jverbosity&trade;.<br /><br />
+ Master Branch is a thrirty years old JMonk and, like all of these pious people, believes strongly in <a href="http://en.wikipedia.org/wiki/Type_system#Static_type-checking">static typing</a>. Since that faith is mercilessly tested every time reality interferes with their believe system, the JMonks are also on the lookout for a sign from a higher power. They have a prophecy that one day a man would come, a Messiah, who will bring them true productivity. But, until this comes true, their only joy will be the incredible beauty of generics and jverbosity&trade;.<br /><br />
 However, they still managed to create a machine that emenates fields of unproductivity. Though the specs didn't say the machine would do this, many of the JMonks hope that the machine might perhaps prove useful after all, one day.
 Because of the difficulties mentioned above, Master Branch made a deal with a developer, <a href="#Ada">Ada</a>, whom he bid to go and search the ancient ruins for useful artifacts. He hoped to reverse engineer the artifacts and maybe find a way to become productive. Ada found and delivered several artifacts, which seemed interesting. Unfortunately they didn't reveal their usefulness yet. <br />
 The most peculiar thing she found in the ruins she didn't deliver to the monks at all ...<br /><br /><br /><br />
