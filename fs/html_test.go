@@ -186,7 +186,7 @@ func TestGoogleMetaData(t *testing.T) {
 		"image", "http,//www.example.com/image.jpg",
 	}
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addNameValueMetas(google_data)
+	hdw.AddNameValueMetas(google_data)
 	txt := hdw.Render()
 
 	expected := `<!doctype html>
@@ -199,24 +199,24 @@ func TestGoogleMetaData(t *testing.T) {
 
 func TestOpenGraph(t *testing.T) {
 	og_data := []string{
-		"og,title", "Title Here",
-		"og,type", "article",
-		"og,url", "http,//www.example.com/",
-		"og,image", "http,//example.com/image.jpg",
-		"og,description", "Description Here",
-		"og,site_name", "Site Name, i.e. Moz",
-		"article,published_time", "2013-09-17T05,59,00+01,00",
-		"article,modified_time", "2013-09-16T19,08,47+01,00",
-		"article,section", "Article Section",
-		"article,tag", "Article Tag",
-		"fb,admins", "Facebook numberic ID",
+		"og:title", "Title Here",
+		"og:type", "article",
+		"og:url", "http://www.example.com/",
+		"og:image", "http://example.com/image.jpg",
+		"og:description", "Description Here",
+		"og:site_name", "Site Name, i.e. Moz",
+		"article:published_time", "2013-09-17T05:59:00+01:00",
+		"article:modified_time", "2013-09-16T19:08:47+01:00",
+		"article:section", "Article Section",
+		"article:tag", "Article Tag",
+		"fb:admins", "Facebook numberic ID",
 	}
 
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addNameValueMetas(og_data)
+	hdw.AddNameValueMetas(og_data)
 	txt := hdw.Render()
 	expected := `<!doctype html>
-<html lang="en"><head><meta og,title="Title Here"><meta og,type="article"><meta og,url="http,//www.example.com/"><meta og,image="http,//example.com/image.jpg"><meta og,description="Description Here"><meta og,site_name="Site Name, i.e. Moz"><meta article,published_time="2013-09-17T05,59,00+01,00"><meta article,modified_time="2013-09-16T19,08,47+01,00"><meta article,section="Article Section"><meta article,tag="Article Tag"><meta fb,admins="Facebook numberic ID"></head><body></body></html>`
+<html lang="en"><head><meta og:title="Title Here"><meta og:type="article"><meta og:url="http://www.example.com/"><meta og:image="http://example.com/image.jpg"><meta og:description="Description Here"><meta og:site_name="Site Name, i.e. Moz"><meta article:published_time="2013-09-17T05:59:00+01:00"><meta article:modified_time="2013-09-16T19:08:47+01:00"><meta article:section="Article Section"><meta article:tag="Article Tag"><meta fb:admins="Facebook numberic ID"></head><body></body></html>`
 
 	if txt != expected {
 		t.Error(fe(expected, txt))

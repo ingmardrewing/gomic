@@ -63,7 +63,10 @@ func (o *Output) writeImprint() {
 
 func (o *Output) writeRss() {
 	rss := o.Rss()
-	o.writeStringToFS(config.Rootpath()+"/feed/rss.xml", rss)
+	path := config.Rootpath() + "/feed/rss.xml"
+	log.Println("Write rss: ", path)
+	log.Println(rss)
+	o.writeStringToFS(path, rss)
 }
 
 func (o *Output) writeNarrativePages() {
@@ -224,7 +227,7 @@ func (html *HTML) getFooterNavi() string {
 	h := ""
 	h += fmt.Sprintf(`<a href="http://twitter.com/devabo_de">Twitter</a>
 	<a href="%s/about.html">About</a>
-	<a href="%s/rss.xml">RSS</a>
+	<a href="%s/feed/rss.xml">RSS</a>
 	<a href="%s/archive.html">Archive</a>
 	<a href="%s/imprint.html">Imprint / Impressum</a>
 	`, p, p, p, p)
@@ -387,6 +390,27 @@ func (h *NarrativePageHtml) writePage() string {
 
 	hdw.AddFooterNavi(h.getFooterNavi())
 
+	og_data := []string{
+		"og:title", h.p.Title(),
+		"og:url", h.p.Path(),
+		"og:image", h.p.ImgUrl(),
+		"og:description", "A Webcomic, Science-Fiction, Dystopian",
+		"og:site_name", "DevAbo.de",
+		"og:type", "article",
+		"article:published_time", h.p.Date(),
+		"article:modified_time", h.p.Date(),
+		"article:section", "Science-Fiction",
+		"article:tag", "comic, graphic novel, webcomic, science-fiction, sci-fi",
+	}
+	hdw.AddNameValueMetas(og_data)
+
+	google_data := []string{
+		"name", h.p.Title(),
+		"description", "A dystopian sci-fi webcomic about the life of software developers",
+		"image", h.p.ImgUrl(),
+	}
+	hdw.AddNameValueMetas(google_data)
+
 	return hdw.Render()
 }
 
@@ -517,6 +541,7 @@ body {
 main {
 	width: 800px;
 	margin: 0 auto;
+	text-align: left;
 }
 
 footer {

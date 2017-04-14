@@ -172,6 +172,7 @@ type htmlDocWrapperI interface {
 	AddTitle(txt string)
 	AddCopyrightNotifier(year string)
 	AddFooterNavi(txt string)
+	AddNameValueMetas(mataData []string)
 	Init()
 }
 
@@ -209,11 +210,11 @@ func (hdw *htmlDocWrapper) addStandardMeta() {
 		"DC.Subject", "web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry",
 		"page-topic", "Science Fiction Web-Comic",
 	}
-	hdw.addNameValueMetas(name_metas)
+	hdw.AddNameValueMetas(name_metas)
 	hdw.htmlDoc.AddToHead(createNode("meta").Attr("http-equiv", "content-type").Attr("content", "text/html;charset=UTF-8"))
 }
 
-func (hdw *htmlDocWrapper) addNameValueMetas(metaData []string) {
+func (hdw *htmlDocWrapper) AddNameValueMetas(metaData []string) {
 	for i := 0; i < len(metaData); i += 2 {
 		m := createNode("meta")
 		m.Attr(metaData[i], metaData[i+1])
