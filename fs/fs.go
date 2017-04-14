@@ -426,6 +426,29 @@ func (hdw *htmlDocWrapper) Init() {
 	hdw.addAndroidIconLinks()
 	hdw.addFaviconLinks()
 	hdw.addAppleIconLinks()
+	hdw.addStandardMeta()
+}
+
+func (hdw *htmlDocWrapper) addTitle(txt string) {
+	hdw.htmlDoc.AddToHead(createNode("title").AppendText(txt))
+}
+
+func (hdw *htmlDocWrapper) addStandardMeta() {
+	name_content_metas := map[string]string{
+		"viewport":   "width=device-width, initial-scale=1.0",
+		"robots":     "index,follow",
+		"author":     "Ingmar Drewing",
+		"publisher":  "Ingmar Drewing",
+		"keywords":   "web comic, comic, cartoon, sci fi, satire, parody, science fiction, action, software industry, pulp, nerd, geek",
+		"DC.Subject": "web comic, comic, cartoon, sci fi, science fiction, satire, parody action, software industry",
+		"page-topic": "Science Fiction Web-Comic",
+	}
+	for k, v := range name_content_metas {
+		m := createNode("meta")
+		m.Attr(k, v)
+		hdw.htmlDoc.AddToHead(m)
+	}
+	hdw.htmlDoc.AddToHead(createNode("meta").Attr("http-equiv", "content-type").Attr("content", "text/html;charset=UTF-8"))
 }
 
 func (hdw *htmlDocWrapper) addFaviconLinks() {

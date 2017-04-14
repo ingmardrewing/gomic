@@ -33,6 +33,18 @@ func TestGenerateIconLinks(t *testing.T) {
 
 }
 
+func TestGenerateTitle(t *testing.T) {
+	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
+	hdw.addTitle("Hello World")
+	txt := hdw.Render()
+	expected := `<!doctype html>
+<html lang="en"><head><title>Hello World</title></head><body></body></html>`
+	if txt != expected {
+		t.Error(fe(expected, txt))
+	}
+
+}
+
 func fe(expected string, actual string) string {
 	return fmt.Sprintf(
 		`didn't find %s, but %s `,
