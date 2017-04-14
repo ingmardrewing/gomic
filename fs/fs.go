@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -351,11 +352,14 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToBody(header)
 
 	main := createNode("main")
+	main.Append(createText("<!-- test 1, 2 -->"))
 	main.AppendText(h.getContent())
 	main.AppendText(h.getNaviHtml())
 	main.AppendText(h.getDisqus())
-
 	hdw.AddToBody(main)
+
+	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+
 	hdw.AddFooterNavi(h.getFooterNavi())
 
 	return hdw.Render()
@@ -439,6 +443,7 @@ ul.archive li {
 
 .copyright{
 	margin-top: 30px;
+	margin-bottom: 60px;
 }
 
 h3 {

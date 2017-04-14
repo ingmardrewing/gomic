@@ -170,6 +170,7 @@ type htmlDocWrapperI interface {
 	AddToHead(n node)
 	AddToBody(n node)
 	AddTitle(txt string)
+	AddCopyrightNotifier(year string)
 	AddFooterNavi(txt string)
 	Init()
 }
@@ -220,7 +221,7 @@ func (hdw *htmlDocWrapper) addNameValueMetas(metaData []string) {
 	}
 }
 
-func (hdw *htmlDocWrapper) addCopyrightNotifier(year string) {
+func (hdw *htmlDocWrapper) AddCopyrightNotifier(year string) {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("class", "copyright").AppendText(`All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-` + year + ` Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.`))
 }
 
