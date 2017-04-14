@@ -59,7 +59,7 @@ func (n *htmlNode) getAttrs() string {
 
 func (n *htmlNode) Append(nd node) node {
 	n.children = append(n.children, nd)
-	return n
+	return nd
 }
 
 func (n *htmlNode) Attr(name string, value string) node {
@@ -78,4 +78,38 @@ func (n *htmlNode) AppendTag(nn string) node {
 	cn := createNode(nn)
 	n.Append(cn)
 	return cn
+}
+
+type htmlDoc interface {
+	Render() string
+	AddToHead(n node)
+	AddToBody(n node)
+}
+
+type html struct {
+	doctype string
+	head    node
+	body    node
+}
+
+func newHtml() htmlDoc {
+	return &html{
+		"<!doctype html>",
+		createNode("head"),
+		createNode("body")}
+}
+
+func (h *html) Render() string {
+	root := createNode("html").Attr("lang", "en")
+	root.Append(h.head)
+	root.Append(h.body)
+	return h.doctype + "\n" + root.Render()
+}
+
+func (h *html) AddToHead(n node) {
+	h.head.Append(n)
+}
+
+func (h *html) AddToBody(n node) {
+	h.body.Append(n)
 }

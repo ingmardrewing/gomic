@@ -74,6 +74,20 @@ func TestCreateSimpleDom(t *testing.T) {
 	}
 }
 
+func TestCreateDomWithDoctype(t *testing.T) {
+	h := newHtml()
+	h.AddToHead(createNode("title").AppendText("Hello World"))
+	h.AddToBody(createNode("div").AppendText("yo"))
+
+	expected := `<!doctype html>
+<html lang="en"><head><title>Hello World</title></head><body><div>yo</div></body></html>`
+
+	txt := h.Render()
+	if txt != expected {
+		t.Error(fe(expected, txt))
+	}
+}
+
 func fe(expected string, actual string) string {
 	return fmt.Sprintf(
 		`node doesn't contain %s, but %s `,
