@@ -616,7 +616,6 @@ const navWrapperFormat = `<nav>%s</nav>`
 const htmlFormat = `<!DOCTYPE html>
 <html itemscope itemtype="http://schema.org/Article" lang="en" manifest="/cache.manifest" >
 	<head>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<meta http-equiv="content-type" content="text/html;charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="robots" content="index,follow">
@@ -679,19 +678,9 @@ Open Graph data
 
 -->
 
-
-
 		%s
-
-
-		<!-- TODO:
-
-		<link rel="shortcut icon" href="https://DevAbo.de/wp-content/themes/drewing2012/favicon.ico">
-		<link rel="alternate" type="application/rss+xml" title="DevAbo.de » Feed" href="https://DevAbo.de/feed/">
-		<script type="text/javascript" src="https://DevAbo.de/wp-content/plugins/cookie-law-info/js/cookielawinfo.js?ver=1.5.3"></script>
-		-->
-
-		<title>DevAbo.de | Graphic Novel | %s</title>
+		<title>test DevAbo.de | Graphic Novel | %s</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		%s
 		%s
 	</head>

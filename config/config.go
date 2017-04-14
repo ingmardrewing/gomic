@@ -66,13 +66,11 @@ func Pages() []map[string]string {
 
 func Rootpath() string {
 	rp := conf.Rootpath
-	log.Println(rp)
 	return rp
 }
 
 func PngDir() string {
 	pd := conf.PngDir
-	log.Println(pd)
 	return pd
 }
 
