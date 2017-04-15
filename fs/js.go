@@ -95,6 +95,7 @@ var disqus_config = function () {
 
 var js = `
 jQuery(document).ready(function() {
+	/*
 function cli_show_cookiebar(p) {
 	/* plugin version 1.5.3 */
 	var Cookie = {
@@ -210,9 +211,6 @@ function cli_show_cookiebar(p) {
 		Cookie.erase(ACCEPT_COOKIE_NAME);
 		return false;
 	});
-console.log("XXX");
-console.log(jQuery("#cookie_action_close_header"));
-console.log("XXX");
 	jQuery("#cookie_action_close_header").click(function(e) {
 		console.log('cookie_action_close_header clicked');
 		e.preventDefault();
@@ -270,4 +268,5 @@ function l1hs(str){if(str.charAt(0)=="#"){str=str.substring(1,str.length);}else{
 					settings: '{"animate_speed_hide":"500","animate_speed_show":"500","background":"#fff","border":"#444","border_on":true,"button_1_button_colour":"#000","button_1_button_hover":"#000000","button_1_link_colour":"#fff","button_1_as_button":true,"button_2_button_colour":"#333","button_2_button_hover":"#292929","button_2_link_colour":"#444","button_2_as_button":false,"font_family":"inherit","header_fix":false,"notify_animate_hide":true,"notify_animate_show":false,"notify_div_id":"#cookie-law-info-bar","notify_position_horizontal":"right","notify_position_vertical":"bottom","scroll_close":false,"scroll_close_reload":false,"showagain_tab":false,"showagain_background":"#fff","showagain_border":"#000","showagain_div_id":"#cookie-law-info-again","showagain_x_position":"100px","text":"#000","show_once_yn":false,"show_once":"10000"}'
 				});
 			});
+			*/
 `

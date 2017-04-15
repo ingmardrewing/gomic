@@ -177,6 +177,7 @@ type htmlDocWrapperI interface {
 	AddCopyrightNotifier(year string)
 	AddFooterNavi(txt string)
 	AddNameValueMetas(mataData []string)
+	AddCookieLawInfo()
 	Init()
 }
 
@@ -230,7 +231,7 @@ func (hdw *htmlDocWrapper) AddCopyrightNotifier(year string) {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("class", "copyright").AppendText(`All content including but not limited to the art, characters, story, website design & graphics are &copy; copyright 2013-` + year + ` Ingmar Drewing unless otherwise stated. All rights reserved. Do not copy, alter or reuse without expressed written permission.`))
 }
 
-func (hdw *htmlDocWrapper) addCookieLawInfo() {
+func (hdw *htmlDocWrapper) AddCookieLawInfo() {
 	hdw.htmlDoc.AddToBody(createNode("div").Attr("id", "cookie-law-info-bar").AppendText(`This website uses cookies to improve your experience. We'll assume you're ok with this, but you can opt-out if you wish.<a href="#" id="cookie_action_close_header" class="medium cli-plugin-button cli-plugin-main-button">Accept</a> <a href="http://www.drewing.de/blog/impressum-imprint/" id="CONSTANT_OPEN_URL" target="_blank" class="cli-plugin-main-link">Read More</a>`))
 }
 
@@ -406,6 +407,7 @@ func (html *HTML) writePage() string {
 	hdw.AddToBody(main)
 
 	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+	hdw.AddCookieLawInfo()
 
 	hdw.AddFooterNavi(html.getFooterNavi())
 
@@ -446,6 +448,7 @@ func (ah *DataHtml) writePage(title string) string {
 	hdw.AddToBody(main)
 
 	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+	hdw.AddCookieLawInfo()
 
 	hdw.AddFooterNavi(ah.getFooterNavi())
 
@@ -489,6 +492,7 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToBody(main)
 
 	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
+	hdw.AddCookieLawInfo()
 
 	hdw.AddFooterNavi(h.getFooterNavi())
 

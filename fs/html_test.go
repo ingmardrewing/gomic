@@ -155,7 +155,7 @@ func TestAddCopyrightNotifier(t *testing.T) {
 
 func TestAddCokieLawInfo(t *testing.T) {
 	hdw := newHtmlDocWrapper().(*htmlDocWrapper)
-	hdw.addCookieLawInfo()
+	hdw.AddCookieLawInfo()
 
 	txt := hdw.Render()
 	expected := `<!doctype html>

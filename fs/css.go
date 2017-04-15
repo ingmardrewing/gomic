@@ -144,6 +144,7 @@ nav a {
 	display: inline-block;
 	padding: 5px 10px 6px;
 	color: #fff;
+	background-color: #000;
 	text-decoration: none;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
