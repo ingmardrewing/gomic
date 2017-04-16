@@ -2,6 +2,7 @@ package fs
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -386,34 +387,6 @@ func (html *HTML) getContent() string {
 	return "x"
 }
 
-func (html *HTML) writePage() string {
-	hdw := newHtmlDocWrapper()
-	hdw.Init()
-
-	css_path := config.Servedrootpath() + "/css/style.css?version=" + hdw.Version()
-	hdw.AddToHead(createNode("link").Attr("rel", "stylesheet").Attr("href", css_path).Attr("type", "text/css"))
-
-	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
-	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
-	hdw.AddTitle("DevAbo.de | Graphic Novel")
-
-	header := createNode("header").AppendText(html.getHeaderHtml())
-	hdw.AddToBody(header)
-	hdw.AddToBody(createText("<!-- have you not -->"))
-
-	main := createNode("main")
-	main.AppendText(html.getContent())
-	main.AppendText(html.getNaviHtml())
-	hdw.AddToBody(main)
-
-	hdw.AddCopyrightNotifier(strconv.Itoa(time.Now().Year()))
-	hdw.AddCookieLawInfo()
-
-	hdw.AddFooterNavi(html.getFooterNavi())
-
-	return hdw.Render()
-}
-
 type DataHtml struct {
 	HTML
 	content string
@@ -429,6 +402,7 @@ func (ah *DataHtml) getContent() string {
 }
 
 func (ah *DataHtml) writePage(title string) string {
+	log.Println("Writing from ah struct")
 	hdw := newHtmlDocWrapper()
 	hdw.Init()
 
@@ -471,6 +445,8 @@ func NewNarrativePageHtml(p *page.Page) *NarrativePageHtml {
 }
 
 func (h *NarrativePageHtml) writePage() string {
+
+	log.Println("Writing from h struct")
 	hdw := newHtmlDocWrapper()
 	hdw.Init()
 

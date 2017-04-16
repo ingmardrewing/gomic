@@ -2,7 +2,10 @@ package comic
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
+	"os/exec"
 	"regexp"
 
 	"github.com/ingmardrewing/gomic/aws"
@@ -143,10 +146,21 @@ func (c *Comic) isNewFile(filename string) bool {
 	return true
 }
 
+func (c *Comic) CreateThumbnail(filename string) {
+	command := "/Users/drewing/bin/createDevabodeThumbFromPath.pl"
+	args := []string{"/Users/drewing/Desktop/devabo_de_uploads/comicstrips/" + filename, "150"}
+	if err := exec.Command(command, args...).Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Printf("Created Thumbnail for %s\n", filename)
+}
+
 func (c *Comic) CheckForNewPages(filenames []string) {
 	for _, f := range filenames {
 		if c.isNewFile(f) {
 			log.Printf("Found new file: %s", f)
+			c.CreateThumbnail(f)
 			p := page.NewPageFromFilename(f)
 			aws.UploadPage(p)
 			db.InsertPage(p)

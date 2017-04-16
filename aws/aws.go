@@ -36,12 +36,12 @@ func UploadPage(p *page.Page) {
 
 	bucket := config.AwsBucket()
 
-	localPathToFile := fmt.Sprintf("%s/%s", config.PngDir(), p.ImageFilename())
+	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
 	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
 
 	upload(localPathToFile, remotePathToFile, sess, bucket)
 
-	localPathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.PngDir(), p.ImageFilename())
+	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
 	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
 
 	upload(localPathToThumbnail, remotePathToThumbnail, sess, bucket)
