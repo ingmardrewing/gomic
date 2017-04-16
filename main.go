@@ -6,6 +6,7 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/fs"
+	"github.com/ingmardrewing/gomic/socmed"
 	"github.com/ingmardrewing/gomic/strato"
 )
 
@@ -28,6 +29,7 @@ func main() {
 		strato.UploadTest()
 	} else if config.IsProd() {
 		strato.UploadProd()
+		socmed.TweetCascade()
+		// TODO: connect to and update on   FB, ...
 	}
-	// TODO: connect to and update on  Twitter, FB, ...
 }

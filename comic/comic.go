@@ -12,6 +12,7 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/page"
+	"github.com/ingmardrewing/gomic/socmed"
 )
 
 type Comic struct {
@@ -165,6 +166,7 @@ func (c *Comic) CheckForNewPages(filenames []string) {
 			aws.UploadPage(p)
 			db.InsertPage(p)
 			c.AddPage(p)
+			socmed.Prepare(p.Path(), p.Title())
 		}
 	}
 }
