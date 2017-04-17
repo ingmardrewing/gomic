@@ -44,11 +44,6 @@ func PublishOnFacebook() {
 
 func PostToTumblr() {
 	cons_key, cons_secret, token, token_secret := config.GetTumblData()
-	fmt.Println(cons_key)
-	fmt.Println(cons_secret)
-	fmt.Println(token)
-	fmt.Println(token_secret)
-
 	client := gotumblr.NewTumblrRestClient(cons_key, cons_secret, token, token_secret, "http://localhost/~drewing/cgi-bin/tumblr.pl", "http://api.tumblr.com")
 
 	blogname := "devabo-de.tumblr.com"
