@@ -43,11 +43,16 @@ func PublishOnFacebook() {
 }
 
 func PostToTumblr() {
+	fmt.Println("Post to tumblr")
 	cons_key, cons_secret, token, token_secret := config.GetTumblData()
 	client := gotumblr.NewTumblrRestClient(cons_key, cons_secret, token, token_secret, "http://localhost/~drewing/cgi-bin/tumblr.pl", "http://api.tumblr.com")
 
 	blogname := "devabo-de.tumblr.com"
 	state := "published"
 	photoPostByURL := client.CreatePhoto(blogname, map[string]string{"source": imgurl, "state": state})
-	fmt.Println(photoPostByURL)
+	if photoPostByURL == nil {
+		fmt.Println("done")
+	} else {
+		fmt.Println(photoPostByURL)
+	}
 }
