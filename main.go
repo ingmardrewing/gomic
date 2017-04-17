@@ -29,6 +29,7 @@ func main() {
 		strato.UploadTest()
 	} else if config.IsProd() {
 		strato.UploadProd()
+		socmed.PostToTumblr()
 		socmed.TweetCascade()
 		socmed.PublishOnFacebook()
 	}

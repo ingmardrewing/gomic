@@ -74,6 +74,14 @@ func PngDir() string {
 	return pd
 }
 
+func GetTumblData() (string, string, string, string) {
+	consumer_key := os.Getenv("GOMIC_TUMBLR_CONSUMER_KEY")
+	consumer_secret := os.Getenv("GOMIC_TUMBLR_CONSUMER_SECRET")
+	token := os.Getenv("GOMIC_TUMBLR_TOKEN")
+	token_secret := os.Getenv("GOMIC_TUMBLR_TOKEN_SECRET")
+	return consumer_key, consumer_secret, token, token_secret
+}
+
 func GetDsn() string {
 	user := os.Getenv("DB_GOMIC_USER")
 	pass := os.Getenv("DB_GOMIC_PASS")
