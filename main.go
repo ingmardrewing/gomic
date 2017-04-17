@@ -30,6 +30,6 @@ func main() {
 	} else if config.IsProd() {
 		strato.UploadProd()
 		socmed.TweetCascade()
-		// TODO: connect to and update on   FB, ...
+		socmed.PublishOnFacebook()
 	}
 }
