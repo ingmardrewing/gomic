@@ -9,23 +9,25 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 )
 
-var newSocmed = map[string]string{}
 var imgurl = ""
+var prodUrl = ""
+var title = ""
+var path = ""
 
-func Prepare(p string, t string, i string) {
-	newSocmed[p] = t
+func Prepare(p string, t string, i string, pu string) {
+	title = t
+	path = p
 	imgurl = i
+	prodUrl = pu
 }
 
 func TweetCascade() {
 	fmt.Println("tweeting ...")
-	for p, t := range newSocmed {
-		command := "/Users/drewing/bin/tweetNewComic.pl"
-		args := []string{"'" + t + "'", p}
-		if err := exec.Command(command, args...).Run(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+	command := "/Users/drewing/bin/tweetNewComic.pl"
+	args := []string{"'" + title + "'", path}
+	if err := exec.Command(command, args...).Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 	fmt.Println("done")
 }
@@ -49,7 +51,15 @@ func PostToTumblr() {
 
 	blogname := "devabo-de.tumblr.com"
 	state := "published"
-	photoPostByURL := client.CreatePhoto(blogname, map[string]string{"source": imgurl, "state": state})
+	tags := "comic,webcomic,graphicnovel,drawing,art,narrative,scifi,sci-fi,science-fiction,dystopy,parody,humor,nerd,pulp,geek,blackandwhite"
+	photoPostByURL := client.CreatePhoto(
+		blogname,
+		map[string]string{
+			"link":    prodUrl,
+			"source":  imgurl,
+			"caption": title,
+			"tags":    tags,
+			"state":   state})
 	if photoPostByURL == nil {
 		fmt.Println("done")
 	} else {

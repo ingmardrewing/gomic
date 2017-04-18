@@ -89,6 +89,10 @@ func (p *Page) ImageFilename() string {
 	return pathParts[len(pathParts)-1]
 }
 
+func (p *Page) ProdUrl() string {
+	return "https://devabo.de/" + p.path
+}
+
 func (p *Page) Title() string {
 	return p.title
 }
