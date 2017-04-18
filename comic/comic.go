@@ -144,7 +144,8 @@ func (c *Comic) IsNewFile(filename string) bool {
 
 func (c *Comic) CreateThumbnail(filename string) {
 	command := "/Users/drewing/bin/createDevabodeThumbFromPath.pl"
-	args := []string{"/Users/drewing/Desktop/devabo_de_uploads/comicstrips/" + filename, "150"}
+	thumbnail_px_width := "150"
+	args := []string{config.PngDir() + filename, thumbnail_px_width}
 	if err := exec.Command(command, args...).Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
