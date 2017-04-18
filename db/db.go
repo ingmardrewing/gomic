@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/page"
 )
 
 var db *sql.DB
@@ -31,7 +31,7 @@ func Query(query string) *sql.Rows {
 	return rows
 }
 
-func InsertPage(p *page.Page) {
+func InsertPage(p *comic.Page) {
 	ins := fmt.Sprintf("INSERT INTO pages (title, path, imgUrl, disqusId, act) VALUES('%s', '%s', '%s', '%s', '%s');\n", p.Title(), p.FSPath(), p.ImgUrl(), p.DisqusId(), "Act III")
 	_, err := db.Exec(ins)
 	if err != nil {

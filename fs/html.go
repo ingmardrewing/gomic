@@ -2,13 +2,12 @@ package fs
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/page"
 )
 
 type node interface {
@@ -402,7 +401,6 @@ func (ah *DataHtml) getContent() string {
 }
 
 func (ah *DataHtml) writePage(title string) string {
-	log.Println("Writing from ah struct")
 	hdw := newHtmlDocWrapper()
 	hdw.Init()
 
@@ -431,7 +429,7 @@ func (ah *DataHtml) writePage(title string) string {
 
 type NarrativePageHtml struct {
 	HTML
-	p          *page.Page
+	p          *comic.Page
 	title      string
 	meta       string
 	csslink    string
@@ -440,13 +438,12 @@ type NarrativePageHtml struct {
 	footerNavi string
 }
 
-func NewNarrativePageHtml(p *page.Page) *NarrativePageHtml {
+func NewNarrativePageHtml(p *comic.Page) *NarrativePageHtml {
 	return &NarrativePageHtml{HTML{}, p, "", "", "", "", "", ""}
 }
 
 func (h *NarrativePageHtml) writePage() string {
 
-	log.Println("Writing from h struct")
 	hdw := newHtmlDocWrapper()
 	hdw.Init()
 

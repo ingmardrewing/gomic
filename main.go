@@ -1,7 +1,10 @@
 package main
 
 import (
+	"log"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/db"
@@ -19,7 +22,7 @@ func main() {
 	comic := comic.NewComic(rows)
 
 	currentImageFiles := fs.ReadImageFilenames()
-	comic.CheckForNewPages(currentImageFiles)
+	checkForNewPages(currentImageFiles, comic)
 	comic.ConnectPages()
 
 	output := fs.NewOutput(&comic)
@@ -29,8 +32,22 @@ func main() {
 		strato.UploadTest()
 	} else if config.IsProd() {
 		strato.UploadProd()
+		socmed.PostToTumblr()
 		socmed.TweetCascade()
 		socmed.PublishOnFacebook()
 	}
-	socmed.PostToTumblr()
+}
+
+func checkForNewPages(filenames []string, c comic.Comic) {
+	for _, f := range filenames {
+		if c.IsNewFile(f) {
+			log.Printf("Found new file: %s", f)
+			c.CreateThumbnail(f)
+			p := comic.NewPageFromFilename(f)
+			aws.UploadPage(p)
+			db.InsertPage(p)
+			c.AddPage(p)
+			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl())
+		}
+	}
 }

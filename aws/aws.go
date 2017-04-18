@@ -10,11 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/page"
 )
 
-func UploadPage(p *page.Page) {
+func UploadPage(p *comic.Page) {
 
 	// Initialize a session reading env vars
 	sess, err := session.NewSession()

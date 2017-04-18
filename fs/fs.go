@@ -13,7 +13,6 @@ import (
 
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/page"
 	"github.com/nfnt/resize"
 )
 
@@ -72,7 +71,7 @@ func (o *Output) writeNarrativePages() {
 	}
 }
 
-func (o *Output) writeThumbnailFor(p *page.Page) string {
+func (o *Output) writeThumbnailFor(p *comic.Page) string {
 	imgpath := config.PngDir() + p.ImageFilename()
 	outimgpath := config.PngDir() + "thumb_" + p.ImageFilename()
 	if _, err := os.Stat(outimgpath); os.IsNotExist(err) {
@@ -169,7 +168,7 @@ func (o *Output) writeJs() {
 	o.writeStringToFS(fp, js.getJs())
 }
 
-func (o *Output) writePageToFileSystem(p *page.Page) {
+func (o *Output) writePageToFileSystem(p *comic.Page) {
 	absPath := config.Rootpath() + p.FSPath()
 	o.prepareFileSystem(absPath)
 

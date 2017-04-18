@@ -5,7 +5,6 @@ import (
 
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/page"
 )
 
 type rss struct {
@@ -16,7 +15,7 @@ func newRss(comic *comic.Comic) *rss {
 	return &rss{comic}
 }
 
-func (r *rss) RssItem(p *page.Page) string {
+func (r *rss) RssItem(p *comic.Page) string {
 	title := p.Title()
 	url := p.Path()
 	pubDate := p.Date()

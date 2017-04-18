@@ -3,21 +3,16 @@ package comic
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"regexp"
 
-	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/db"
-	"github.com/ingmardrewing/gomic/page"
-	"github.com/ingmardrewing/gomic/socmed"
 )
 
 type Comic struct {
 	rootpath string
-	pages    []*page.Page
+	pages    []*Page
 }
 
 func (c *Comic) generatePages(rows *sql.Rows) {
@@ -31,23 +26,23 @@ func (c *Comic) generatePages(rows *sql.Rows) {
 			id       sql.NullInt64
 		)
 		rows.Scan(&title, &path, &imgUrl, &disqusId, &act, &id)
-		p := page.NewPage(title.String, path.String, imgUrl.String, disqusId.String, act.String)
+		p := NewPage(title.String, path.String, imgUrl.String, disqusId.String, act.String)
 		c.AddPage(p)
 	}
 }
 
 func NewComic(rows *sql.Rows) Comic {
-	pages := []*page.Page{}
+	pages := []*Page{}
 	c := Comic{config.Rootpath(), pages}
 	c.generatePages(rows)
 	return c
 }
 
-func (c *Comic) AddPage(p *page.Page) {
+func (c *Comic) AddPage(p *Page) {
 	c.pages = append(c.pages, p)
 }
 
-func (c *Comic) Get10LastComicPagesNewestFirst() []*page.Page {
+func (c *Comic) Get10LastComicPagesNewestFirst() []*Page {
 	// get splice with last 10 pages
 	last10 := c.pages[len(c.pages)-11:]
 
@@ -69,7 +64,7 @@ func (c *Comic) ConnectPages() {
 	}
 }
 
-func (c *Comic) GetPages() []*page.Page {
+func (c *Comic) GetPages() []*Page {
 	return c.pages
 }
 
@@ -78,28 +73,28 @@ func (c *Comic) pageIndexExists(i int) bool {
 	return l > 0 && i >= 0 && i < l
 }
 
-func (c *Comic) firstFor(i int) *page.Page {
+func (c *Comic) firstFor(i int) *Page {
 	if c.pageIndexExists(0) && i != 0 {
 		return c.firstPage()
 	}
 	return nil
 }
 
-func (c *Comic) previousFor(i int) *page.Page {
+func (c *Comic) previousFor(i int) *Page {
 	if c.pageIndexExists(i - 1) {
 		return c.pages[i-1]
 	}
 	return nil
 }
 
-func (c *Comic) nextFor(i int) *page.Page {
+func (c *Comic) nextFor(i int) *Page {
 	if c.pageIndexExists(i + 1) {
 		return c.pages[i+1]
 	}
 	return nil
 }
 
-func (c *Comic) lastFor(i int) *page.Page {
+func (c *Comic) lastFor(i int) *Page {
 	l := len(c.pages)
 	if l > 0 && i != l-1 {
 		return c.LastPage()
@@ -107,14 +102,14 @@ func (c *Comic) lastFor(i int) *page.Page {
 	return nil
 }
 
-func (c *Comic) firstPage() *page.Page {
+func (c *Comic) firstPage() *Page {
 	if c.pageIndexExists(0) {
 		return c.pages[0]
 	}
 	return nil
 }
 
-func (c *Comic) LastPage() *page.Page {
+func (c *Comic) LastPage() *Page {
 	l := len(c.pages)
 	if l > 0 {
 		return c.pages[l-1]
@@ -134,7 +129,7 @@ func (c *Comic) isRelevant(filename string) bool {
 	return true
 }
 
-func (c *Comic) isNewFile(filename string) bool {
+func (c *Comic) IsNewFile(filename string) bool {
 	if !c.isRelevant(filename) {
 		return false
 	}
@@ -155,18 +150,4 @@ func (c *Comic) CreateThumbnail(filename string) {
 		os.Exit(1)
 	}
 	fmt.Printf("Created Thumbnail for %s\n", filename)
-}
-
-func (c *Comic) CheckForNewPages(filenames []string) {
-	for _, f := range filenames {
-		if c.isNewFile(f) {
-			log.Printf("Found new file: %s", f)
-			c.CreateThumbnail(f)
-			p := page.NewPageFromFilename(f)
-			aws.UploadPage(p)
-			db.InsertPage(p)
-			c.AddPage(p)
-			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl())
-		}
-	}
 }
