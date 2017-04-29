@@ -16,25 +16,28 @@ import (
 
 func UploadPage(p *comic.Page) {
 	sess := getAwsSession()
-
-	bucket := config.AwsBucket()
-	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
-	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
-
-	upload(localPathToFile, remotePathToFile, sess, bucket)
-
-	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
-	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
-
-	upload(localPathToThumbnail, remotePathToThumbnail, sess, bucket)
-
+	uploadComicPageFile(p, sess)
+	uploadComicPageThumbnailFile(p, sess)
 	fmt.Println("Going to update db now")
 	stop()
 }
 
-func getAwsSession() *session.Session {
+func uploadComicPageThumbnailFile(p *comic.Page, sess *session.Session) {
+	bucket := config.AwsBucket()
+	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
+	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
+	upload(localPathToThumbnail, remotePathToThumbnail, sess, bucket)
+}
 
-	// Initialize a session reading env vars
+func uploadComicPageFile(p *comic.Page, sess *session.Session) {
+	bucket := config.AwsBucket()
+	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
+	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
+	upload(localPathToFile, remotePathToFile, sess, bucket)
+}
+
+func getAwsSession() *session.Session {
+	// Initialize a session reading env vars (reading done by AWS)
 	sess, _ := session.NewSession()
 	return sess
 }
