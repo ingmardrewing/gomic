@@ -9,11 +9,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 )
 
-func UploadPage(p comic.AwsPage) {
+type AwsPage interface {
+	ImageFilename() string
+}
+
+func UploadPage(p AwsPage) {
 	sess := getAwsSession()
 
 	tl, tr := getThumbnailPaths(p)
@@ -26,13 +29,13 @@ func UploadPage(p comic.AwsPage) {
 	stop()
 }
 
-func getThumbnailPaths(p comic.AwsPage) (string, string) {
+func getThumbnailPaths(p AwsPage) (string, string) {
 	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
 	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
 	return localPathToThumbnail, remotePathToThumbnail
 }
 
-func getFilePaths(p comic.AwsPage) (string, string) {
+func getFilePaths(p AwsPage) (string, string) {
 	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
 	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
 	return localPathToFile, remotePathToFile
@@ -68,15 +71,14 @@ func upload(bucket string, from string, to string, sess *session.Session) {
 }
 
 func stop() {
-	answer := AskUser("Proceed? [yN]")
-	if answer {
+	if askUser("Proceed? [yN]") {
 		fmt.Println("continuing")
 	} else {
 		os.Exit(0)
 	}
 }
 
-func AskUser(question string) bool {
+func askUser(question string) bool {
 	fmt.Println(question)
 	reader := bufio.NewReader(os.Stdin)
 	confirmation, _ := reader.ReadString('\n')

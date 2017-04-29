@@ -12,10 +12,6 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 )
 
-type AwsPage interface {
-	ImageFilename() string
-}
-
 type Page struct {
 	title, path, imgUrl, disqusId, act string
 	first, prev, next, last            *Page

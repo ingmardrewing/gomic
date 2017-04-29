@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 )
 
@@ -61,6 +60,6 @@ func (p pageMock) ImageFilename() string {
 	return "DevAbode_0085.png"
 }
 
-func getAwsPage() comic.AwsPage {
+func getAwsPage() AwsPage {
 	return &pageMock{}
 }
