@@ -1,10 +1,8 @@
 package aws
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -24,9 +22,6 @@ func UploadPage(p AwsPage) {
 
 	fl, fr := getFilePaths(p)
 	upload(config.AwsBucket(), fl, fr, sess)
-
-	fmt.Println("Going to update db now")
-	stop()
 }
 
 func getThumbnailPaths(p AwsPage) (string, string) {
@@ -55,7 +50,6 @@ func upload(bucket string, from string, to string, sess *session.Session) {
 	defer file.Close()
 
 	uploader := s3manager.NewUploader(sess)
-
 	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(to),
@@ -68,22 +62,6 @@ func upload(bucket string, from string, to string, sess *session.Session) {
 	}
 
 	fmt.Printf("Successfully uploaded %q to %q\n", from, bucket+to)
-}
-
-func stop() {
-	if askUser("Proceed? [yN]") {
-		fmt.Println("continuing")
-	} else {
-		os.Exit(0)
-	}
-}
-
-func askUser(question string) bool {
-	fmt.Println(question)
-	reader := bufio.NewReader(os.Stdin)
-	confirmation, _ := reader.ReadString('\n')
-	confirmation = strings.TrimSpace(confirmation)
-	return confirmation == "y" || confirmation == "Y"
 }
 
 func exitErrorf(msg string, args ...interface{}) {
