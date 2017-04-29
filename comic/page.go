@@ -25,7 +25,7 @@ func getUserInput(prompt string) string {
 	return strings.TrimSpace(input)
 }
 
-func createPathTitleFromTitle( title string) string {
+func createPathTitleFromTitle(title string) string {
 	whitespace := regexp.MustCompile(`\s+`)
 	forbidden := regexp.MustCompile(`[^-A-Za-z0-9#]`)
 	trailingdash := regexp.MustCompile(`-$`)
@@ -37,10 +37,7 @@ func createPathTitleFromTitle( title string) string {
 
 func getYMD() (int, int, int) {
 	t := time.Now()
-	y := t.Year()
-	m := int(t.Month())
-	d := t.Day()
-	return y, m, d
+	return t.Year(), int(t.Month()), t.Day()
 }
 
 func getPath(title string, y int, m int, d int) string {
@@ -48,17 +45,17 @@ func getPath(title string, y int, m int, d int) string {
 	return fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
 }
 
-func getDisqusId(y int, m int, d int)string{
+func getDisqusId(y int, m int, d int) string {
 	id := y*10000 + m*100 + d
 	disqusId := fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
 	return disqusId
 }
 
-func getPageData(filename string) (string, string, string, string, string){
+func getPageData(filename string) (string, string, string, string, string) {
 	act := getUserInput("Enter act for " + filename + ": ")
 	title := getUserInput("Enter title for " + filename + ": ")
 	y, m, d := getYMD()
-	path := getPath(title,y, m, d)
+	path := getPath(title, y, m, d)
 	disqusId := getDisqusId(y, m, d)
 	imgUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
 	return act, title, path, disqusId, imgUrl
@@ -73,7 +70,7 @@ func NewPageFromFilename(filename string) *Page {
 	for {
 		page := getPageFromFilenameAndUserInput(filename)
 		summary := fmt.Sprintf("\ntitle: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", page.title, page.path, page.disqusId, page.imgUrl)
-		answer := AskUser( fmt.Sprintf( "Creating the following page:\n%s\nok? [yN]", summary))
+		answer := AskUser(fmt.Sprintf("Creating the following page:\n%s\nok? [yN]", summary))
 		if answer {
 			return page
 		}

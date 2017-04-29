@@ -120,12 +120,15 @@ func (c *Comic) LastPage() *Page {
 func (c *Comic) isRelevant(filename string) bool {
 	irr := ".DS_Store"
 	if filename == irr {
+		fmt.Println(1)
 		return false
 	}
 	thumb := regexp.MustCompile(`^thumb_`)
 	if thumb.MatchString(filename) {
+		fmt.Println(2)
 		return false
 	}
+	fmt.Println(3)
 	return true
 }
 

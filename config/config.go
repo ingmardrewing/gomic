@@ -30,7 +30,7 @@ var conf *cnf
 var Stage string
 
 func Read(yamlPath string) {
-	conf = newConfig(yamlPath)
+	newConfig(yamlPath)
 }
 
 func IsDev() bool {
@@ -110,7 +110,7 @@ func AwsDir() string {
 	return conf.AwsDir
 }
 
-func newConfig(yamlPath string) *cnf {
+func newConfig(yamlPath string) {
 	stg := flag.String("stage", "", "target stage")
 	flag.Parse()
 	Stage = *stg
@@ -123,6 +123,10 @@ where <stage> is one of dev, prod, test`)
 		os.Exit(0)
 	}
 
+	ReadDirect(yamlPath)
+}
+
+func ReadDirect(yamlPath string) {
 	yamldata, err := ioutil.ReadFile(yamlPath)
 	if err != nil {
 		panic(err.Error())
@@ -134,5 +138,5 @@ where <stage> is one of dev, prod, test`)
 		panic(err.Error())
 	}
 
-	return &config
+	conf = &config
 }

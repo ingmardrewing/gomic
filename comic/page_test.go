@@ -8,8 +8,8 @@ func TestGetPath(t *testing.T) {
 	y := 2017
 	m := 04
 	d := 29
-	actual := getPath(title,y,m,d)
-	if actual != expected{
+	actual := getPath(title, y, m, d)
+	if actual != expected {
 		t.Errorf("Expected %s, but got %s", expected, actual)
 	}
 }
@@ -19,8 +19,8 @@ func TestDisqusId(t *testing.T) {
 	y := 2017
 	m := 04
 	d := 29
-	actual := getDisqusId(y,m,d)
-	if actual != expected{
+	actual := getDisqusId(y, m, d)
+	if actual != expected {
 		t.Errorf("Expected %s, but got %s", expected, actual)
 	}
 }
@@ -32,4 +32,17 @@ func TestCreatePathTitleFromTitle(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %s, but got %s", expected, actual)
 	}
+}
+
+func TestImageFilename(t *testing.T) {
+	expected := "DevAbode_0085.png"
+	p := getPage()
+	actual := p.ImageFilename()
+	if actual != expected {
+		t.Errorf("Expected %s, but got %s", expected, actual)
+	}
+}
+
+func getPage() *Page {
+	return NewPage("#85-Test", "/2017/04/19/#85-Test", "http://localhost/DevAbode_0085.png", "20170419 http://DevAbo.de/?p=20170429", "III")
 }

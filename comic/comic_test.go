@@ -20,20 +20,19 @@ func TestIsRelevant(t *testing.T) {
 	}
 
 	result = c.isRelevant("DevAbode_0085.png")
-	if result {
+	if !result {
 		t.Error("Expected result to be true, but it is false")
 	}
 }
-
 func TestIsNewFile(t *testing.T) {
 	c := newComic()
 
-	result := c.IsNewFile(".DS_Store")
+	result := c.IsNewFile("DevAbode_0001.png")
 	if result {
 		t.Error("Expected result to be false, but it is true")
 	}
 
-	result = c.IsNewFile("DevAbode_0001.png")
+	result = c.IsNewFile(".DS_Store")
 	if result {
 		t.Error("Expected result to be false, but it is true")
 	}
@@ -45,7 +44,7 @@ func TestIsNewFile(t *testing.T) {
 }
 
 func newComic() Comic {
-	config.Read("/Users/drewing/Sites/gomic.yaml")
+	config.ReadDirect("/Users/drewing/Sites/gomic.yaml")
 	pages := createPages()
 	return Comic{config.Rootpath(), pages}
 }
