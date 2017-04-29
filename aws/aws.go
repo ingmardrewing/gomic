@@ -14,7 +14,7 @@ import (
 	"github.com/ingmardrewing/gomic/config"
 )
 
-func UploadPage(p *comic.Page) {
+func UploadPage(p comic.AwsPage) {
 	sess := getAwsSession()
 	uploadComicPageFile(p, sess)
 	uploadComicPageThumbnailFile(p, sess)
@@ -22,14 +22,19 @@ func UploadPage(p *comic.Page) {
 	stop()
 }
 
-func uploadComicPageThumbnailFile(p *comic.Page, sess *session.Session) {
+func uploadComicPageThumbnailFile(p comic.AwsPage, sess *session.Session) {
 	bucket := config.AwsBucket()
-	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
-	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
+	localPathToThumbnail, remotePathToThumbnail := getThumbnailPaths(p)
 	upload(localPathToThumbnail, remotePathToThumbnail, sess, bucket)
 }
 
-func uploadComicPageFile(p *comic.Page, sess *session.Session) {
+func getThumbnailPaths(p comic.AwsPage) (string, string) {
+	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
+	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
+	return localPathToThumbnail, remotePathToThumbnail
+}
+
+func uploadComicPageFile(p comic.AwsPage, sess *session.Session) {
 	bucket := config.AwsBucket()
 	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
 	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
