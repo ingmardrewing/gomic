@@ -18,51 +18,63 @@ type Page struct {
 	meta, navi                         [][]string
 }
 
+func getUserInput(prompt string) string {
+	fmt.Println(prompt)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	return strings.TrimSpace(input)
+}
+
+func createPathTitleFromTitle( title string) string {
+	whitespace := regexp.MustCompile(`\s+`)
+	forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
+	trailingdash := regexp.MustCompile(`-$`)
+
+	pathTitle := whitespace.ReplaceAllString(title, "-")
+	pathTitle = forbidden.ReplaceAllString(pathTitle, "")
+	return trailingdash.ReplaceAllString(pathTitle, "")
+}
+
+func getYMD() (int, int, int) {
+	t := time.Now()
+	y := t.Year()
+	m := int(t.Month())
+	d := t.Day()
+	return y, m, d
+}
+
+func getPathAndDisqusId(title string)(string, string){
+	y, m, d := getYMD()
+	pathTitle := createPathTitleFromTitle(title)
+	path := fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
+	id := y*10000 + m*100 + d
+	disqusId := fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
+	return path, disqusId
+}
+
+func getPageData(filename string) (string, string, string, string, string){
+	act := getUserInput("Enter act for " + filename + ": ")
+	title := getUserInput("Enter title for " + filename + ": ")
+	path, disqusId := getPathAndDisqusId(title)
+	imgUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
+	return act, title, path, disqusId, imgUrl
+}
+
+func getPageFromFilenameAndUserInput(filename string) *Page {
+	act, title, path, disqusId, imgUrl := getPageData(filename)
+	return &Page{title, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
+}
+
 func NewPageFromFilename(filename string) *Page {
-
-	var title, path, imgUrl, disqusId, act string
 	for {
-
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("Enter title for %s: ", filename)
-		title, _ = reader.ReadString('\n')
-		title = strings.TrimSpace(title)
-
-		fmt.Printf("Enter act for %s: ", filename)
-		act, _ = reader.ReadString('\n')
-		act = strings.TrimSpace(act)
-
-		whitespace := regexp.MustCompile(`\s+`)
-		forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
-		trailingdash := regexp.MustCompile(`-$`)
-		pathTitle := whitespace.ReplaceAllString(title, "-")
-		pathTitle = forbidden.ReplaceAllString(pathTitle, "")
-		pathTitle = trailingdash.ReplaceAllString(pathTitle, "")
-
-		t := time.Now()
-		y := t.Year()
-		m := int(t.Month())
-		d := t.Day()
-		path = fmt.Sprintf("/%d/%02d/%02d/%s", y, m, d, pathTitle)
-
-		id := y*10000 + m*100 + d
-		disqusId = fmt.Sprintf("%d https://DevAbo.de/?p=%d", id, id)
-
-		imgUrl = fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
-
-		summary := fmt.Sprintf("\ntitle: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", title, path, disqusId, imgUrl)
-
-		answer := AskUser(
-			fmt.Sprintf(
-				"Creating the following page:\n%s\nok? [yN]", summary))
-
+		page := getPageFromFilenameAndUserInput(filename)
+		summary := fmt.Sprintf("\ntitle: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", page.title, page.path, page.disqusId, page.imgUrl)
+		answer := AskUser( fmt.Sprintf( "Creating the following page:\n%s\nok? [yN]", summary))
 		if answer {
-			break
+			return page
 		}
 		fmt.Println("Okay, let's try again ...")
 	}
-
-	return &Page{title, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func AskUser(question string) bool {
