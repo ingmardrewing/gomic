@@ -36,9 +36,14 @@ func getThumbnailPaths(p comic.AwsPage) (string, string) {
 
 func uploadComicPageFile(p comic.AwsPage, sess *session.Session) {
 	bucket := config.AwsBucket()
+	localPath, remotePath := getFilePaths(p)
+	upload(localPath, remotePath, sess, bucket)
+}
+
+func getFilePaths(p comic.AwsPage) (string, string) {
 	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
 	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
-	upload(localPathToFile, remotePathToFile, sess, bucket)
+	return localPathToFile, remotePathToFile
 }
 
 func getAwsSession() *session.Session {

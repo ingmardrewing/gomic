@@ -36,6 +36,23 @@ func TestGetThumbnailPaths(t *testing.T) {
 	}
 }
 
+func TestGetFilePaths(t *testing.T) {
+	config.ReadDirect("/Users/drewing/Sites/gomic.yaml")
+	ap := getAwsPage()
+	expectedLocal := "/Users/drewing/Desktop/devabo_de_uploads/comicstrips/DevAbode_0085.png"
+	expectedRemote := "comicstrips/DevAbode_0085.png"
+
+	local, remote := getFilePaths(ap)
+
+	if local != expectedLocal {
+		t.Errorf("Expected %s, but got %s", expectedLocal, local)
+	}
+
+	if remote != expectedRemote {
+		t.Errorf("Expected %s, but got %s", expectedRemote, remote)
+	}
+}
+
 // ******  mocking
 
 type pageMock struct{}
