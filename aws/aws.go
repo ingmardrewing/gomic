@@ -8,7 +8,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
@@ -16,28 +15,21 @@ import (
 
 func UploadPage(p comic.AwsPage) {
 	sess := getAwsSession()
-	uploadComicPageFile(p, sess)
-	uploadComicPageThumbnailFile(p, sess)
+
+	tl, tr := getThumbnailPaths(p)
+	upload(config.AwsBucket(), tl, tr, sess)
+
+	fl, fr := getFilePaths(p)
+	upload(config.AwsBucket(), fl, fr, sess)
+
 	fmt.Println("Going to update db now")
 	stop()
-}
-
-func uploadComicPageThumbnailFile(p comic.AwsPage, sess *session.Session) {
-	bucket := config.AwsBucket()
-	localPathToThumbnail, remotePathToThumbnail := getThumbnailPaths(p)
-	upload(localPathToThumbnail, remotePathToThumbnail, sess, bucket)
 }
 
 func getThumbnailPaths(p comic.AwsPage) (string, string) {
 	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
 	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
 	return localPathToThumbnail, remotePathToThumbnail
-}
-
-func uploadComicPageFile(p comic.AwsPage, sess *session.Session) {
-	bucket := config.AwsBucket()
-	localPath, remotePath := getFilePaths(p)
-	upload(localPath, remotePath, sess, bucket)
 }
 
 func getFilePaths(p comic.AwsPage) (string, string) {
@@ -52,13 +44,7 @@ func getAwsSession() *session.Session {
 	return sess
 }
 
-func getS3(sess *session.Session) *s3.S3 {
-	// Create S3 service client
-	svc := s3.New(sess)
-	return svc
-}
-
-func upload(from string, to string, sess *session.Session, bucket string) {
+func upload(bucket string, from string, to string, sess *session.Session) {
 	file, err := os.Open(from)
 	if err != nil {
 		exitErrorf("Unable to open file %q, %v", err)
