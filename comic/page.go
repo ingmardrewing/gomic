@@ -103,7 +103,7 @@ func (p *Page) ImageFilename() string {
 }
 
 func (p *Page) ProdUrl() string {
-	return "https://devabo.de/" + p.path
+	return "https://devabo.de" + p.path
 }
 
 func (p *Page) Title() string {

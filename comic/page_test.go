@@ -43,6 +43,33 @@ func TestImageFilename(t *testing.T) {
 	}
 }
 
+func TestProdUrl(t *testing.T) {
+	expected := "https://devabo.de/2017/04/19/#85-Test"
+	p := getPage()
+	actual := p.ProdUrl()
+	if actual != expected {
+		t.Errorf("Expected %s, but got %s", expected, actual)
+	}
+}
+
+func TestTitle(t *testing.T) {
+	expected := "#85-Test"
+	p := getPage()
+	actual := p.Title()
+	if actual != expected {
+		t.Errorf("Expected %s, but got %s", expected, actual)
+	}
+}
+
+func TestPageDisqusId(t *testing.T) {
+	expected := "20170419 http://DevAbo.de/?p=20170429"
+	p := getPage()
+	actual := p.DisqusId()
+	if actual != expected {
+		t.Errorf("Expected %s, but got %s", expected, actual)
+	}
+}
+
 func getPage() *Page {
 	return NewPage("#85-Test", "/2017/04/19/#85-Test", "http://localhost/DevAbode_0085.png", "20170419 http://DevAbo.de/?p=20170429", "III")
 }
