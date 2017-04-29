@@ -94,7 +94,6 @@ func NewPage(
 	act string) *Page {
 	return &Page{title, path, imgUrl, disqusId, act,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
-
 }
 
 func (p *Page) ImageFilename() string {

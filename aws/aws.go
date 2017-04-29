@@ -15,27 +15,9 @@ import (
 )
 
 func UploadPage(p *comic.Page) {
-
-	// Initialize a session reading env vars
-	sess, err := session.NewSession()
-
-	// Create S3 service client
-	svc := s3.New(sess)
-	result, err := svc.ListBuckets(nil)
-	if err != nil {
-		exitErrorf("Unable to list buckets, %v", err)
-	}
-
-	fmt.Println("Buckets:")
-	for _, b := range result.Buckets {
-		fmt.Printf("* %s created on %s\n",
-			aws.StringValue(b.Name), aws.TimeValue(b.CreationDate))
-	}
-
-	stop()
+	sess := getAwsSession()
 
 	bucket := config.AwsBucket()
-
 	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
 	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
 
@@ -48,6 +30,19 @@ func UploadPage(p *comic.Page) {
 
 	fmt.Println("Going to update db now")
 	stop()
+}
+
+func getAwsSession() *session.Session {
+
+	// Initialize a session reading env vars
+	sess, _ := session.NewSession()
+	return sess
+}
+
+func getS3(sess *session.Session) *s3.S3 {
+	// Create S3 service client
+	svc := s3.New(sess)
+	return svc
 }
 
 func upload(from string, to string, sess *session.Session, bucket string) {
