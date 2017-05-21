@@ -3,7 +3,7 @@ package comic
 import "testing"
 
 func TestGetPath(t *testing.T) {
-	expected := "/2017/04/29/#85-test"
+	expected := "/2017/04/29/85-test"
 	title := "#85-test"
 	y := 2017
 	m := 04
@@ -26,8 +26,8 @@ func TestDisqusId(t *testing.T) {
 }
 
 func TestCreatePathTitleFromTitle(t *testing.T) {
-	expected := "#85-The-Test"
 	title := "#85 The  Test $"
+	expected := "85-The-Test"
 	actual := createPathTitleFromTitle(title)
 	if actual != expected {
 		t.Errorf("Expected %s, but got %s", expected, actual)
@@ -44,7 +44,7 @@ func TestImageFilename(t *testing.T) {
 }
 
 func TestProdUrl(t *testing.T) {
-	expected := "https://devabo.de/2017/04/19/#85-Test"
+	expected := "https://devabo.de/2017/04/19/85-Test"
 	p := getPage()
 	actual := p.ProdUrl()
 	if actual != expected {
@@ -71,5 +71,5 @@ func TestPageDisqusId(t *testing.T) {
 }
 
 func getPage() *Page {
-	return NewPage("#85-Test", "/2017/04/19/#85-Test", "http://localhost/DevAbode_0085.png", "20170419 http://DevAbo.de/?p=20170429", "III")
+	return NewPage("#85-Test", "/2017/04/19/85-Test", "http://localhost/DevAbode_0085.png", "20170419 http://DevAbo.de/?p=20170429", "III")
 }

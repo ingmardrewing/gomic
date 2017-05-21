@@ -27,7 +27,7 @@ func getUserInput(prompt string) string {
 
 func createPathTitleFromTitle(title string) string {
 	whitespace := regexp.MustCompile(`\s+`)
-	forbidden := regexp.MustCompile(`[^-A-Za-z0-9#]`)
+	forbidden := regexp.MustCompile(`[^-A-Za-z0-9]`)
 	trailingdash := regexp.MustCompile(`-$`)
 
 	pathTitle := whitespace.ReplaceAllString(title, "-")
