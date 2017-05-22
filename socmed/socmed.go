@@ -25,7 +25,7 @@ func Publish() {
 	response, err := resty.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(getPublishableConted()).
-		Post("http://" + user + ":" + pass + "@drewing.eu:8081/0.1/gomic/socmed/publish")
+		Post("http://" + user + ":" + pass + "@drewing.eu:443/0.1/gomic/socmed/publish")
 	if err != nil {
 		log.Println(err)
 	}
