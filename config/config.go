@@ -90,6 +90,10 @@ func GetDsn() string {
 	return fmt.Sprintf("%s:%s@%s/%s", user, pass, host, name)
 }
 
+func GetBasicAuthUserAndPass() (string, string) {
+	return os.Getenv("GOMIC_BASIC_AUTH_USER"), os.Getenv("GOMIC_BASIC_AUTH_PASS")
+}
+
 func SshUsername() string {
 	return os.Getenv("SSH_USER")
 }

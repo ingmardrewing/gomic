@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/go-resty/resty"
+	"github.com/ingmardrewing/gomic/config"
 )
 
 var imgurl = ""
@@ -20,10 +21,11 @@ func Prepare(p string, t string, i string, pu string) {
 }
 
 func Publish() {
+	user, pass := config.GetBasicAuthUserAndPass()
 	response, err := resty.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(getPublishableConted()).
-		Post("http://user:}vh9m*,4#D4W7z2o2Hk%@drewing.eu:8081/0.1/gomic/socmed/publish")
+		Post("http://" + user + ":" + pass + "@drewing.eu:8081/0.1/gomic/socmed/publish")
 	if err != nil {
 		log.Println(err)
 	}
