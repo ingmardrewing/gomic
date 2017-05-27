@@ -58,6 +58,6 @@ func notPrepared() bool {
 }
 
 func getPublishableConted() string {
-	tags := "comic,webcomic,graphicnovel,drawing,art,narrative,scifi,sci-fi,science-fiction,dystopy,parody,humor,nerd,pulp,geek,blackandwhite"
+	tags := "comic,webcomic,graphicnovel,drawing,art,narrative,scifi,sciencefiction,dystopy,parody,humor,nerd,pulp,geek,blackandwhite,inked,inking,illustration,drawings,draw,illustrator,sketch,sketchbook,artist,comics,comicart,concept,conceptart,create,creative,imagination,artwork,ink,fantasy"
 	return fmt.Sprintf(`{"Link":"%s","ImgUrl":"%s","Title":"%s","TagsCsvString":"%s","Description":"%s"}`, prodUrl, imgurl, title, tags, description)
 }
