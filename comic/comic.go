@@ -98,6 +98,7 @@ func (c *Comic) nextFor(i int) *Page {
 }
 
 func (c *Comic) lastFor(i int) *Page {
+
 	l := len(c.pages)
 	if l > 0 && i != l-1 {
 		return c.LastPage()
@@ -138,13 +139,11 @@ func (c *Comic) IsNewFile(filename string) bool {
 	}
 	for _, p := range c.pages {
 		fn := p.ImageFilename()
-		log.Printf("Comparing Filename: %s.\n", fn)
 		if fn == filename {
-			log.Println("File already embedded")
 			return false
 		}
 	}
-	log.Println("File is new.")
+	log.Println("File is new:" + filename)
 	return true
 }
 

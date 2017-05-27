@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/go-resty/resty"
+	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 )
 
@@ -22,7 +23,11 @@ func Prepare(p string, t string, i string, pu string, d string) {
 	description = d
 }
 
-func Publish() {
+func Publish(c *comic.Comic) {
+
+	if notPrepared() {
+		prepareFromComic(c)
+	}
 	user, pass := config.GetBasicAuthUserAndPass()
 	content := getPublishableConted()
 	log.Println(content)
@@ -34,6 +39,19 @@ func Publish() {
 		log.Println(err)
 	}
 	log.Println(response)
+}
+
+func prepareFromComic(c *comic.Comic) {
+	lastPage := c.Get10LastComicPagesNewestFirst()[10]
+	title = lastPage.Title()
+	path = lastPage.Path()
+	imgurl = lastPage.ImgUrl()
+	prodUrl = lastPage.ProdUrl()
+	description = lastPage.Description()
+}
+
+func notPrepared() bool {
+	return len(prodUrl) == 0
 }
 
 func getPublishableConted() string {

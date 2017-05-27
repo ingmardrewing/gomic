@@ -32,7 +32,7 @@ func main() {
 		strato.UploadTest()
 	} else if config.IsProd() {
 		strato.UploadProd()
-		socmed.Publish()
+		socmed.Publish(&comic)
 	}
 }
 
@@ -45,6 +45,7 @@ func checkForNewPages(filenames []string, c comic.Comic) {
 			aws.UploadPage(p)
 			db.InsertPage(p)
 			c.AddPage(p)
+			log.Printf("new File with Path: %s\n", p.Path())
 			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl(), p.Description())
 		}
 	}

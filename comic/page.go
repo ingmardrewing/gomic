@@ -3,7 +3,6 @@ package comic
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -99,7 +98,6 @@ func NewPage(
 }
 
 func (p *Page) ImageFilename() string {
-	log.Println(p.imgUrl)
 	pathParts := strings.Split(p.imgUrl, "/")
 	return pathParts[len(pathParts)-1]
 }
