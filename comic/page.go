@@ -13,9 +13,9 @@ import (
 )
 
 type Page struct {
-	title, path, imgUrl, disqusId, act string
-	first, prev, next, last            *Page
-	meta, navi                         [][]string
+	title, path, imgUrl, disqusId, act, description string
+	first, prev, next, last                         *Page
+	meta, navi                                      [][]string
 }
 
 func getUserInput(prompt string) string {
@@ -51,19 +51,20 @@ func getDisqusId(y int, m int, d int) string {
 	return disqusId
 }
 
-func getPageData(filename string) (string, string, string, string, string) {
+func getPageData(filename string) (string, string, string, string, string, string) {
 	act := getUserInput("Enter act for " + filename + ": ")
 	title := getUserInput("Enter title for " + filename + ": ")
+	description := getUserInput("Enter description for " + filename + ": ")
 	y, m, d := getYMD()
 	path := getPath(title, y, m, d)
 	disqusId := getDisqusId(y, m, d)
 	imgUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/%s", filename)
-	return act, title, path, disqusId, imgUrl
+	return act, title, path, disqusId, imgUrl, description
 }
 
 func getPageFromFilenameAndUserInput(filename string) *Page {
-	act, title, path, disqusId, imgUrl := getPageData(filename)
-	return &Page{title, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
+	act, title, path, disqusId, imgUrl, description := getPageData(filename)
+	return &Page{title, path, imgUrl, disqusId, act, description, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func NewPageFromFilename(filename string) *Page {
@@ -92,7 +93,7 @@ func NewPage(
 	imgUrl string,
 	disqusId string,
 	act string) *Page {
-	return &Page{title, path, imgUrl, disqusId, act,
+	return &Page{title, path, imgUrl, disqusId, act, "",
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
