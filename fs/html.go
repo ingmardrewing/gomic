@@ -190,10 +190,10 @@ func newHtmlDocWrapper() htmlDocWrapperI {
 }
 
 func (hdw *htmlDocWrapper) Init() {
+	hdw.addStandardMeta()
 	hdw.addAndroidIconLinks()
 	hdw.addFaviconLinks()
 	hdw.addAppleIconLinks()
-	hdw.addStandardMeta()
 	hdw.addGoogleApiLinkToJQuery()
 }
 
