@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-resty/resty"
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 )
@@ -30,15 +29,19 @@ func Publish(c *comic.Comic) {
 	}
 	user, pass := config.GetBasicAuthUserAndPass()
 	content := getPublishableConted()
-	log.Println(content)
-	response, err := resty.R().
-		SetHeader("Content-Type", "application/json").
-		SetBody(getPublishableConted()).
-		Post("https://" + user + ":" + pass + "@drewing.eu/0.1/gomic/socmed/publish")
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(response)
+
+	log.Printf(`curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '%s' -u %s:'%s' https://drewing.eu:443/0.1/gomic/socmed/publish`, content, user, pass)
+
+	/*
+		response, err := resty.R().
+			SetHeader("Content-Type", "application/json").
+			SetBody(getPublishableConted()).
+			Post("https://" + user + ":" + pass + "@drewing.eu/0.1/gomic/socmed/publish")
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(response)
+	*/
 }
 
 func prepareFromComic(c *comic.Comic) {
