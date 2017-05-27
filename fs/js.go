@@ -24,7 +24,7 @@ func (j *jsGen) getAnalytics() string {
 }
 
 func (j *jsGen) getDisqus(title string, disqusUrl string, disqusId string) string {
-	return fmt.Sprintf(disqus_universal_code, title, disqusUrl, disqusId)
+	return fmt.Sprintf(disqus_variant, title, disqusUrl, disqusId)
 }
 
 var analytics = `
@@ -55,42 +55,24 @@ function gaOptout() {
 //]]>
 </script>`
 
-const disqus_universal_code = `
+var disqus_variant = `
 <div id="disqus_thread"></div>
-<script type="text/javascript">
-//<![CDATA[
+<script>
 
-
-var disqus_title = "%s";
-var disqus_url = 'https://DevAbo.de%s';
-var disqus_identifier = '%s';
-var disqus_container_id = 'disqus_thread';
-var disqus_shortname = 'devabode';
-var disqus_config_custom = window.disqus_config;
 var disqus_config = function () {
-    this.language = '';
-	this.callbacks.onReady.push(function () {
-        // sync comments in the background so we don't block the page
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = '?cf_action=sync_comments&post_id=1235';
-        var firstScript = document.getElementsByTagName('script')[0];
-        firstScript.parentNode.insertBefore(script, firstScript);
-    });
-    if (disqus_config_custom) {
-        disqus_config_custom.call(this);
-    }
+	this.page.title= "%s";
+	this.page.url = 'https://DevAbo.de%s';
+	this.page.identifier =  '%s';
 };
-(function() {
-    var dsq = document.createElement('script');
-	dsq.type = 'text/javascript';
-    dsq.async = true;
-	dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
 
-//]]>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://devabode.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
 </script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 `
 
 var js = `
