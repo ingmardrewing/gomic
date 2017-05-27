@@ -252,7 +252,7 @@ func (hdw *htmlDocWrapper) addFaviconLinks() {
 		l.Attr("rel", "icon")
 		l.Attr("type", "image/png")
 		l.Attr("sizes", s)
-		l.Attr("href", "/favicon-"+s+".png")
+		l.Attr("href", "/icons/favicon-"+s+".png")
 		hdw.htmlDoc.AddToHead(l)
 	}
 }
@@ -281,7 +281,7 @@ func (hdw *htmlDocWrapper) addAndroidIconLinks() {
 		l.Attr("rel", "icon")
 		l.Attr("type", "image/png")
 		l.Attr("sizes", s)
-		l.Attr("href", "/android-icon-"+s+".png")
+		l.Attr("href", "/icons/android-icon-"+s+".png")
 		hdw.htmlDoc.AddToHead(l)
 	}
 }
@@ -302,7 +302,7 @@ func (hdw *htmlDocWrapper) addAppleIconLinks() {
 		l := createNode("link")
 		l.Attr("rel", "apple-touch-icon")
 		l.Attr("sizes", s)
-		l.Attr("href", "/apple-icon-"+s+".png")
+		l.Attr("href", "/icons/apple-icon-"+s+".png")
 		hdw.htmlDoc.AddToHead(l)
 	}
 }
