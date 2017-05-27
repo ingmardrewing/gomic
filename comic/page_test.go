@@ -71,5 +71,10 @@ func TestPageDisqusId(t *testing.T) {
 }
 
 func getPage() *Page {
-	return NewPage("#85-Test", "/2017/04/19/85-Test", "http://localhost/DevAbode_0085.png", "20170419 http://DevAbo.de/?p=20170429", "III")
+	return NewPage("#85-Test",
+		"A new page ..",
+		"/2017/04/19/85-Test",
+		"http://localhost/DevAbode_0085.png",
+		"20170419 http://DevAbo.de/?p=20170429",
+		"III")
 }

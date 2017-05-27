@@ -487,9 +487,9 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:card").Attr("content", h.p.ImgUrl()))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:site").Attr("content", "@devabo_de"))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:title").Attr("content", h.p.Title()))
-	hdw.AddToHead(createNode("meta").Attr("name", "twitter:description").Attr("content", "A dystopian science-fiction webcomic set 1337 years after WW III"))
+	hdw.AddToHead(createNode("meta").Attr("name", "twitter:description").Attr("content", h.p.Description()))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:creator").Attr("content", "@ingmardrewing"))
-	hdw.AddToHead(createNode("meta").Attr("name", "twitter:image:src").Attr("content", h.p.ImgUrl()))
+	hdw.AddToHead(createNode("meta").Attr("name", "twitter:image").Attr("content", h.p.ImgUrl()))
 
 	return hdw.Render()
 }

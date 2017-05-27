@@ -13,7 +13,7 @@ import (
 )
 
 type Page struct {
-	title, path, imgUrl, disqusId, act, description string
+	title, description, path, imgUrl, disqusId, act string
 	first, prev, next, last                         *Page
 	meta, navi                                      [][]string
 }
@@ -64,7 +64,7 @@ func getPageData(filename string) (string, string, string, string, string, strin
 
 func getPageFromFilenameAndUserInput(filename string) *Page {
 	act, title, path, disqusId, imgUrl, description := getPageData(filename)
-	return &Page{title, path, imgUrl, disqusId, act, description, nil, nil, nil, nil, [][]string{}, [][]string{}}
+	return &Page{title, description, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
 func NewPageFromFilename(filename string) *Page {
@@ -89,11 +89,12 @@ func AskUser(question string) bool {
 
 func NewPage(
 	title string,
+	description string,
 	path string,
 	imgUrl string,
 	disqusId string,
 	act string) *Page {
-	return &Page{title, path, imgUrl, disqusId, act, "",
+	return &Page{title, description, path, imgUrl, disqusId, act,
 		nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 

@@ -19,17 +19,31 @@ type Comic struct {
 func (c *Comic) generatePages(rows *sql.Rows) {
 	for rows.Next() {
 		var (
-			id         sql.NullInt64
-			title      sql.NullString
-			path       sql.NullString
-			imgUrl     sql.NullString
-			disqusId   sql.NullString
-			act        sql.NullString
-			pageNumber sql.NullInt64
+			id          sql.NullInt64
+			title       sql.NullString
+			description sql.NullString
+			path        sql.NullString
+			imgUrl      sql.NullString
+			disqusId    sql.NullString
+			act         sql.NullString
+			pageNumber  sql.NullInt64
 		)
-		rows.Scan(&id, &title, &path, &imgUrl, &disqusId, &act, &pageNumber)
-		log.Printf("ImgUrl from db: %s.\n", imgUrl.String)
-		p := NewPage(title.String, path.String, imgUrl.String, disqusId.String, act.String)
+		rows.Scan(
+			&id,
+			&title,
+			&description,
+			&path,
+			&imgUrl,
+			&disqusId,
+			&act,
+			&pageNumber)
+		p := NewPage(
+			title.String,
+			description.String,
+			path.String,
+			imgUrl.String,
+			disqusId.String,
+			act.String)
 		c.AddPage(p)
 	}
 }
@@ -134,6 +148,7 @@ func (c *Comic) isRelevant(filename string) bool {
 }
 
 func (c *Comic) IsNewFile(filename string) bool {
+	log.Println(filename)
 	if !c.isRelevant(filename) {
 		return false
 	}
