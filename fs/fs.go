@@ -60,9 +60,11 @@ func (o *Output) writeImprint() {
 
 func (o *Output) writeRss() {
 	rss := newRss(o.comic)
-	path := config.Rootpath() + "/feed/rss.xml"
-	log.Println("Writing rss: ", path)
-	o.writeStringToFS(path, rss.Rss())
+	path := config.Rootpath() + "/feed/"
+	filename := "rss.xml"
+	o.prepareFileSystem(path)
+	log.Println("Writing rss: ", path+filename)
+	o.writeStringToFS(path+filename, rss.Rss())
 }
 
 func (o *Output) writeNarrativePages() {

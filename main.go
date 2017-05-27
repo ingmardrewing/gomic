@@ -17,7 +17,7 @@ func main() {
 	config.Read("/Users/drewing/Sites/gomic.yaml")
 
 	db.Init()
-	rows := db.Query("SELECT * FROM pages;")
+	rows := db.Query("SELECT * FROM pages order by pageNumber;")
 
 	comic := comic.NewComic(rows)
 
