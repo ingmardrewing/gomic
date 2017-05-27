@@ -3,6 +3,7 @@ package comic
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -70,7 +71,7 @@ func getPageFromFilenameAndUserInput(filename string) *Page {
 func NewPageFromFilename(filename string) *Page {
 	for {
 		page := getPageFromFilenameAndUserInput(filename)
-		summary := fmt.Sprintf("\ntitle: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", page.title, page.path, page.disqusId, page.imgUrl)
+		summary := fmt.Sprintf("\ntitle: %s\ndescription: %s\npath: %s\ndisqusId: %s\nimgUrl: %s\n", page.title, page.description, page.path, page.disqusId, page.imgUrl)
 		answer := AskUser(fmt.Sprintf("Creating the following page:\n%s\nok? [yN]", summary))
 		if answer {
 			return page
@@ -98,6 +99,7 @@ func NewPage(
 }
 
 func (p *Page) ImageFilename() string {
+	log.Println(p.imgUrl)
 	pathParts := strings.Split(p.imgUrl, "/")
 	return pathParts[len(pathParts)-1]
 }

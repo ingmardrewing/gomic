@@ -3,6 +3,7 @@ package comic
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -18,14 +19,16 @@ type Comic struct {
 func (c *Comic) generatePages(rows *sql.Rows) {
 	for rows.Next() {
 		var (
-			title    sql.NullString
-			path     sql.NullString
-			imgUrl   sql.NullString
-			disqusId sql.NullString
-			act      sql.NullString
-			id       sql.NullInt64
+			id         sql.NullInt64
+			title      sql.NullString
+			path       sql.NullString
+			imgUrl     sql.NullString
+			disqusId   sql.NullString
+			act        sql.NullString
+			pageNumber sql.NullInt64
 		)
-		rows.Scan(&title, &path, &imgUrl, &disqusId, &act, &id)
+		rows.Scan(&id, &title, &path, &imgUrl, &disqusId, &act, &pageNumber)
+		log.Printf("ImgUrl from db: %s.\n", imgUrl.String)
 		p := NewPage(title.String, path.String, imgUrl.String, disqusId.String, act.String)
 		c.AddPage(p)
 	}
@@ -135,10 +138,13 @@ func (c *Comic) IsNewFile(filename string) bool {
 	}
 	for _, p := range c.pages {
 		fn := p.ImageFilename()
+		log.Printf("Comparing Filename: %s.\n", fn)
 		if fn == filename {
+			log.Println("File already embedded")
 			return false
 		}
 	}
+	log.Println("File is new.")
 	return true
 }
 
