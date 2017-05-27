@@ -120,6 +120,10 @@ func (p *Page) ImgUrl() string {
 	return p.imgUrl
 }
 
+func (p *Page) Description() string {
+	return p.description
+}
+
 func (p *Page) ThumnailUrl() string {
 	thumbUrl := fmt.Sprintf("https://s3-us-west-1.amazonaws.com/devabode-us/%s/thumb_%s", config.AwsDir(), p.ImageFilename())
 	return thumbUrl

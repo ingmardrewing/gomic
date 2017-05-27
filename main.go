@@ -45,7 +45,7 @@ func checkForNewPages(filenames []string, c comic.Comic) {
 			aws.UploadPage(p)
 			db.InsertPage(p)
 			c.AddPage(p)
-			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl())
+			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl(), p.Description())
 		}
 	}
 }

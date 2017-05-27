@@ -12,16 +12,20 @@ var imgurl = ""
 var prodUrl = ""
 var title = ""
 var path = ""
+var description = ""
 
-func Prepare(p string, t string, i string, pu string) {
+func Prepare(p string, t string, i string, pu string, d string) {
 	title = t
 	path = p
 	imgurl = i
 	prodUrl = pu
+	description = d
 }
 
 func Publish() {
 	user, pass := config.GetBasicAuthUserAndPass()
+	content := getPublishableConted()
+	log.Println(content)
 	response, err := resty.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(getPublishableConted()).
@@ -34,6 +38,5 @@ func Publish() {
 
 func getPublishableConted() string {
 	tags := "comic,webcomic,graphicnovel,drawing,art,narrative,scifi,sci-fi,science-fiction,dystopy,parody,humor,nerd,pulp,geek,blackandwhite"
-	description := "A new page of DevAbo.de is online ..."
 	return fmt.Sprintf(`{"Link":"%s","ImgUrl":"%s","Title":"%s","TagsCsvString":"%s","Description":"%s"}`, prodUrl, imgurl, title, tags, description)
 }
