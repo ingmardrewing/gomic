@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ingmardrewing/gomic/aws"
@@ -43,35 +43,54 @@ func main() {
 	*/
 }
 
-func callApi() {
-	url := "https://drewing.eu/0.1/gomic/socmed/echo"
-	data := []byte(`{"Link":"https://devabo.de/2017/05/27/87-Incoming","ImgUrl":"https://s3-us-west-1.amazonaws.com/devabode-us/comicstrips/DevAbode_0087.png","Title":"#87 Incoming","TagsCsvString":"comic,webcomic,graphicnovel,drawing,art,narrative,scifi,sci-fi,science-fiction,dystopy,parody,humor,nerd,pulp,geek,blackandwhite","Description":"While Eezer and Master Branch are talking about the losses from the attack ofthe cult, another problem occurs ..."}`)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+/*
+[
+  {
+     "Id": 1,
+    "PageNumber": 1,
+   "Title": "#1 A Step in the dark",
+      "Description": "#1 A Step in the dark",
+     "Path": "/2013/08/01/a-step-in-the-dark",
+    "ImgUrl": "https://devabode-us.s3.amazonaws.com/comicstrips/DevAbode_0001.png",
+   "DisqusId": "8 http://devabo.de/?p=8",
+      "Act": "Act I"
+    },
+	]
+*/
+
+type Pages struct {
+	Pages []content.Page
+}
+
+var myClient = &http.Client{Timeout: 10 * time.Second}
+
+func getJson(url string, target interface{}) error {
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal("NewReqeust: ", err)
-		return
+		return err
 	}
 
 	user, pass := config.GetBasicAuthUserAndPass()
 	req.SetBasicAuth(user, pass)
-	req.Header.Add("Content-Type", "application/json; charset=utf-8")
 
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
+	resp, err := myClient.Do(req)
 	if err != nil {
-		log.Fatal("Do: ", err)
-		return
+		return err
 	}
 	defer resp.Body.Close()
 
-	var t content.Page
-	decoder := json.NewDecoder(resp.Body)
-	err = decoder.Decode(&t)
+	return json.NewDecoder(resp.Body).Decode(target)
+}
+
+func callApi() {
+	p := new(Pages)
+	url := "http://drewing.eu:8443/0.1/gomic/page/"
+	err := getJson(url, p)
 	if err != nil {
 		panic(err)
 	}
-	log.Println(t.Title)
+	log.Println(p)
 }
 
 func checkForNewPages(filenames []string, c comic.Comic) {
