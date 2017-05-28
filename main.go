@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,6 +15,7 @@ import (
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
 	"github.com/ingmardrewing/gomic/db"
+	"github.com/ingmardrewing/gomic/fs"
 	"github.com/ingmardrewing/gomic/socmed"
 )
 
@@ -20,14 +24,15 @@ func main() {
 	db.Init()
 
 	pages := callPagesApi()
-	fmt.Println(pages)
-	//	rows := db.Query("SELECT * FROM pages order by pageNumber;")
-
-	//	comic := comic.NewComic(pages)
+	imageFiles := fs.ReadImageFilenames()
+	newPages := checkForNewPages(imageFiles, pages.Pages)
+	storeNewPages(newPages)
+	pages.Pages = append(pages.Pages, newPages...)
+	fmt.Println(newPages)
 
 	/*
-		currentImageFiles := fs.ReadImageFilenames()
-		checkForNewPages(currentImageFiles, comic)
+		comic := comic.NewComic(pages.Pages)
+
 		comic.ConnectPages()
 
 		output := fs.NewOutput(&comic)
@@ -42,26 +47,7 @@ func main() {
 	*/
 }
 
-/*
-[
-  {
-     "Id": 1,
-    "PageNumber": 1,
-   "Title": "#1 A Step in the dark",
-      "Description": "#1 A Step in the dark",
-     "Path": "/2013/08/01/a-step-in-the-dark",
-    "ImgUrl": "https://devabode-us.s3.amazonaws.com/comicstrips/DevAbode_0001.png",
-   "DisqusId": "8 http://devabo.de/?p=8",
-      "Act": "Act I"
-    },
-	]
-*/
-
-type Pages struct {
-	Pages []comic.Page
-}
-
-func callPagesApi() *Pages {
+func callPagesApi() *comic.Pages {
 	url := "https://drewing.eu:8443/0.1/gomic/page/"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -78,7 +64,7 @@ func callPagesApi() *Pages {
 	}
 	defer resp.Body.Close()
 
-	p := new(Pages)
+	p := new(comic.Pages)
 	err = json.NewDecoder(resp.Body).Decode(p)
 	if err != nil {
 		panic(err)
@@ -86,17 +72,80 @@ func callPagesApi() *Pages {
 	return p
 }
 
-func checkForNewPages(filenames []string, c comic.Comic) {
+func checkForNewPages(filenames []string, knownPages []*comic.Page) []*comic.Page {
+	newPages := []*comic.Page{}
 	for _, f := range filenames {
-		if c.IsNewFile(f) {
-			log.Printf("Found new file: %s", f)
-			c.CreateThumbnail(f)
+		if isNewFile(f, knownPages) {
+			comic.CreateThumbnail(f)
 			p := comic.NewPageFromFilename(f)
 			aws.UploadPage(p)
 			db.InsertPage(p)
-			c.AddPage(p)
+			newPages = append(newPages, p)
 			log.Printf("new File with Path: %s\n", p.GetPath())
 			socmed.Prepare(p.GetPath(), p.GetTitle(), p.GetImgUrl(), p.GetProdUrl(), p.GetDescription())
 		}
+	}
+	return newPages
+}
+
+func isNewFile(filename string, knownPages []*comic.Page) bool {
+	if !isRelevant(filename) {
+		return false
+	}
+	for _, p := range knownPages {
+		fn := p.GetImageFilename()
+		if fn == filename {
+			return false
+		}
+	}
+	log.Println("File is new:" + filename)
+	return true
+}
+
+func isRelevant(filename string) bool {
+	irr := ".DS_Store"
+	if filename == irr {
+		return false
+	}
+	thumb := regexp.MustCompile(`^thumb_`)
+	if thumb.MatchString(filename) {
+		return false
+	}
+	return true
+}
+
+func storeNewPages(newPages []*comic.Page) {
+	myClient := &http.Client{Timeout: 10 * time.Second}
+	for _, p := range newPages {
+		data := []byte(fmt.Sprintf(`{"Id":"%d","PageNumber":"%d","Title":"%s","Description":"%s","Path":"%s","ImgUrl":"%s","DisqusId":"%s","Act":"%s"}`,
+			p.Id,
+			p.PageNumber,
+			p.Title,
+			p.Description,
+			p.Path,
+			p.ImgUrl,
+			p.DisqusId,
+			p.Act))
+		url := "https://drewing.eu:8443/0.1/gomic/page/"
+		req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
+		req.Header.Set("Content-Type", "application/json")
+
+		if err != nil {
+			panic(err)
+		}
+
+		user, pass := config.GetBasicAuthUserAndPass()
+		req.SetBasicAuth(user, pass)
+
+		resp, err := myClient.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		fmt.Println("Put response Status:", resp.Status)
+		fmt.Println("Put response Headers:", resp.Header)
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("Put response Body:", body)
 	}
 }

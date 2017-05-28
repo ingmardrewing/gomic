@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,6 +12,10 @@ import (
 
 	"github.com/ingmardrewing/gomic/config"
 )
+
+type Pages struct {
+	Pages []*Page
+}
 
 type Page struct {
 	Id, PageNumber                                  int
@@ -66,6 +71,18 @@ func getPageData(filename string) (string, string, string, string, string, strin
 func getPageFromFilenameAndUserInput(filename string) *Page {
 	act, title, path, disqusId, imgUrl, description := getPageData(filename)
 	return &Page{0, 0, title, description, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
+}
+
+func CreateThumbnail(filename string) {
+	command := "/Users/drewing/bin/createDevabodeThumbFromPath.pl"
+	pngDir := config.PngDir() + filename
+	thumbnail_px_width := "150"
+	args := []string{pngDir, thumbnail_px_width}
+	if err := exec.Command(command, args...).Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Printf("Created Thumbnail for %s\n", filename)
 }
 
 func NewPageFromFilename(filename string) *Page {

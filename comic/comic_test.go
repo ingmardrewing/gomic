@@ -1,47 +1,6 @@
 package comic
 
-import (
-	"testing"
-
-	"github.com/ingmardrewing/gomic/config"
-)
-
-func TestIsRelevant(t *testing.T) {
-	c := newComic()
-
-	result := c.isRelevant(".DS_Store")
-	if result {
-		t.Error("Expected result to be false, but it is true")
-	}
-
-	result = c.isRelevant("thumb_DevAbode_0085.png")
-	if result {
-		t.Error("Expected result to be false, but it is true")
-	}
-
-	result = c.isRelevant("DevAbode_0085.png")
-	if !result {
-		t.Error("Expected result to be true, but it is false")
-	}
-}
-func TestIsNewFile(t *testing.T) {
-	c := newComic()
-
-	result := c.IsNewFile("DevAbode_0001.png")
-	if result {
-		t.Error("Expected result to be false, but it is true")
-	}
-
-	result = c.IsNewFile(".DS_Store")
-	if result {
-		t.Error("Expected result to be false, but it is true")
-	}
-
-	result = c.IsNewFile("DevAbode_0011.png")
-	if result != true {
-		t.Error("Expected result to be true, but it is false")
-	}
-}
+import "github.com/ingmardrewing/gomic/config"
 
 func newComic() Comic {
 	config.ReadDirect("/Users/drewing/Sites/gomic.yaml")

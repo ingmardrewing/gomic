@@ -1,57 +1,14 @@
 package comic
 
-import (
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
-	"os/exec"
-	"regexp"
-
-	"github.com/ingmardrewing/gomic/config"
-)
+import "github.com/ingmardrewing/gomic/config"
 
 type Comic struct {
 	rootpath string
 	pages    []*Page
 }
 
-func (c *Comic) generatePages(rows *sql.Rows) {
-	for rows.Next() {
-		var (
-			id          sql.NullInt64
-			title       sql.NullString
-			description sql.NullString
-			path        sql.NullString
-			imgUrl      sql.NullString
-			disqusId    sql.NullString
-			act         sql.NullString
-			pageNumber  sql.NullInt64
-		)
-		rows.Scan(
-			&id,
-			&title,
-			&description,
-			&path,
-			&imgUrl,
-			&disqusId,
-			&act,
-			&pageNumber)
-		p := NewPage(
-			title.String,
-			description.String,
-			path.String,
-			imgUrl.String,
-			disqusId.String,
-			act.String)
-		c.AddPage(p)
-	}
-}
-
-func NewComic(rows *sql.Rows) Comic {
-	pages := []*Page{}
+func NewComic(pages []*Page) Comic {
 	c := Comic{config.Rootpath(), pages}
-	c.generatePages(rows)
 	return c
 }
 
@@ -133,42 +90,4 @@ func (c *Comic) LastPage() *Page {
 		return c.pages[l-1]
 	}
 	return nil
-}
-
-func (c *Comic) isRelevant(filename string) bool {
-	irr := ".DS_Store"
-	if filename == irr {
-		return false
-	}
-	thumb := regexp.MustCompile(`^thumb_`)
-	if thumb.MatchString(filename) {
-		return false
-	}
-	return true
-}
-
-func (c *Comic) IsNewFile(filename string) bool {
-	log.Println(filename)
-	if !c.isRelevant(filename) {
-		return false
-	}
-	for _, p := range c.pages {
-		fn := p.GetImageFilename()
-		if fn == filename {
-			return false
-		}
-	}
-	log.Println("File is new:" + filename)
-	return true
-}
-
-func (c *Comic) CreateThumbnail(filename string) {
-	command := "/Users/drewing/bin/createDevabodeThumbFromPath.pl"
-	thumbnail_px_width := "150"
-	args := []string{config.PngDir() + filename, thumbnail_px_width}
-	if err := exec.Command(command, args...).Run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	fmt.Printf("Created Thumbnail for %s\n", filename)
 }
