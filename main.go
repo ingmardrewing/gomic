@@ -85,7 +85,7 @@ func getJson(url string, target interface{}) error {
 
 func callApi() {
 	p := new(Pages)
-	url := "http://drewing.eu:8443/0.1/gomic/page/"
+	url := "https://drewing.eu:8443/0.1/gomic/page/"
 	err := getJson(url, p)
 	if err != nil {
 		panic(err)
