@@ -56,7 +56,7 @@ func TestGetFilePaths(t *testing.T) {
 
 type pageMock struct{}
 
-func (p pageMock) ImageFilename() string {
+func (p pageMock) GetImageFilename() string {
 	return "DevAbode_0085.png"
 }
 

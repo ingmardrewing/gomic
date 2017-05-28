@@ -153,7 +153,7 @@ func (c *Comic) IsNewFile(filename string) bool {
 		return false
 	}
 	for _, p := range c.pages {
-		fn := p.ImageFilename()
+		fn := p.GetImageFilename()
 		if fn == filename {
 			return false
 		}

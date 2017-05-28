@@ -16,15 +16,15 @@ func newRss(comic *comic.Comic) *rss {
 }
 
 func (r *rss) RssItem(p *comic.Page) string {
-	title := p.Title()
-	url := p.Path()
-	pubDate := p.Date()
-	act := p.Act()
-	description := p.Title()
-	content := fmt.Sprintf(`<img src="%s">`, p.ImgUrl())
-	thumbnailUrl := p.ThumnailUrl()
-	imageUrl := p.ImgUrl()
-	imageName := p.ImageFilename()
+	title := p.GetTitle()
+	url := p.GetPath()
+	pubDate := p.GetDateFromFSPath()
+	act := p.GetAct()
+	description := p.GetTitle()
+	content := fmt.Sprintf(`<img src="%s">`, p.GetImgUrl())
+	thumbnailUrl := p.GetThumnailUrl()
+	imageUrl := p.GetImgUrl()
+	imageName := p.GetImageFilename()
 	return fmt.Sprintf(rssItem, title, url, pubDate, act, url, description, content, thumbnailUrl, imageUrl, imageName, thumbnailUrl)
 }
 

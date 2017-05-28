@@ -449,11 +449,11 @@ func (h *NarrativePageHtml) writePage() string {
 
 	css_path := config.Servedrootpath() + "/css/style.css?version=" + hdw.Version()
 	hdw.AddToHead(createNode("link").Attr("rel", "stylesheet").Attr("href", css_path).Attr("type", "text/css"))
-	hdw.AddToHead(createNode("link").Attr("rel", "canonical").Attr("href", h.p.Path()))
+	hdw.AddToHead(createNode("link").Attr("rel", "canonical").Attr("href", h.p.GetPath()))
 
 	js_path := config.Servedrootpath() + "/js/script.js?version=" + hdw.Version()
 	hdw.AddToHead(createNode("script").Attr("src", js_path).Attr("type", "text/javascript").Attr("language", "javascript"))
-	hdw.AddTitle("DevAbo.de | Graphic Novel | " + h.p.Title())
+	hdw.AddTitle("DevAbo.de | Graphic Novel | " + h.p.GetTitle())
 
 	header := createNode("header").AppendText(h.getHeaderHtml())
 	hdw.AddToBody(header)
@@ -469,38 +469,38 @@ func (h *NarrativePageHtml) writePage() string {
 
 	hdw.AddFooterNavi(h.getFooterNavi())
 
-	desc := h.p.Description()
+	desc := h.p.GetDescription()
 	if len(desc) == 0 {
 		desc = "A dystopian sci-fi webcomic about the life of software developers"
 	}
-	hdw.AddToHead(createNode("meta").Attr("property", "og:title").Attr("content", h.p.Title()))
-	hdw.AddToHead(createNode("meta").Attr("property", "og:url").Attr("content", h.p.Path()))
-	hdw.AddToHead(createNode("meta").Attr("property", "og:image").Attr("content", h.p.ImgUrl()))
+	hdw.AddToHead(createNode("meta").Attr("property", "og:title").Attr("content", h.p.GetTitle()))
+	hdw.AddToHead(createNode("meta").Attr("property", "og:url").Attr("content", h.p.GetPath()))
+	hdw.AddToHead(createNode("meta").Attr("property", "og:image").Attr("content", h.p.GetImgUrl()))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:description").Attr("content", desc))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:site_name").Attr("content", "DevAbo.de"))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:type").Attr("content", "article"))
-	hdw.AddToHead(createNode("meta").Attr("property", "article:published_time").Attr("content", h.p.Date()))
-	hdw.AddToHead(createNode("meta").Attr("property", "article:modified_time").Attr("content", h.p.Date()))
+	hdw.AddToHead(createNode("meta").Attr("property", "article:published_time").Attr("content", h.p.GetDateFromFSPath()))
+	hdw.AddToHead(createNode("meta").Attr("property", "article:modified_time").Attr("content", h.p.GetDateFromFSPath()))
 	hdw.AddToHead(createNode("meta").Attr("property", "article:section").Attr("content", "Science-Fiction"))
 	hdw.AddToHead(createNode("meta").Attr("property", "article:tag").Attr("content", "comic, graphic novel, webcomic, science-fiction, sci-fi"))
 
-	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("content", h.p.Title()))
+	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("content", h.p.GetTitle()))
 	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("description", desc))
-	hdw.AddToHead(createNode("meta").Attr("itemprop", "image").Attr("content", h.p.ImgUrl()))
+	hdw.AddToHead(createNode("meta").Attr("itemprop", "image").Attr("content", h.p.GetImgUrl()))
 
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:card").Attr("content", "summary_large_image"))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:site").Attr("content", "@devabo_de"))
-	hdw.AddToHead(createNode("meta").Attr("name", "twitter:title").Attr("content", h.p.Title()))
+	hdw.AddToHead(createNode("meta").Attr("name", "twitter:title").Attr("content", h.p.GetTitle()))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:text:description").Attr("content", desc))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:creator").Attr("content", "@ingmardrewing"))
-	hdw.AddToHead(createNode("meta").Attr("name", "twitter:image").Attr("content", h.p.ImgUrl()))
+	hdw.AddToHead(createNode("meta").Attr("name", "twitter:image").Attr("content", h.p.GetImgUrl()))
 
 	return hdw.Render()
 }
 
 func (h *NarrativePageHtml) getContent() string {
 	f := `<img src="%s" width="800" height="1334" alt="">`
-	html := fmt.Sprintf(f, h.p.Img())
+	html := fmt.Sprintf(f, h.p.GetImgUrl())
 	if !h.p.IsLast() {
 		html = fmt.Sprintf(`<a href="%s">%s</a>`, h.p.UrlToNext(), html)
 	}
@@ -531,7 +531,7 @@ func (h *NarrativePageHtml) getMetaHtml() string {
 }
 
 func (h *NarrativePageHtml) getHeaderHtml() string {
-	hl := h.getHeadline(h.p.Title())
+	hl := h.getHeadline(h.p.GetTitle())
 	s := config.Servedrootpath()
 	return fmt.Sprintf(`
 	<a href="%s" class="home"><!--DevAbo.de--></a>
@@ -542,21 +542,21 @@ func (h *NarrativePageHtml) getHeaderHtml() string {
 func (h *NarrativePageHtml) getDisqus() string {
 	js := newJs()
 	return js.getDisqus(
-		h.p.Title(),
+		h.p.GetTitle(),
 		h.getDisqusUrl(),
 		h.getDisqusIdentifier(),
 	)
 }
 
 func (h *NarrativePageHtml) getDisqusIdentifier() string {
-	if len(h.p.DisqusIdentifier()) > 0 {
-		return h.p.DisqusIdentifier()
+	if len(h.p.GetDisqusIdentifier()) > 0 {
+		return h.p.GetDisqusIdentifier()
 	}
-	return h.p.Path()
+	return h.p.GetPath()
 }
 
 func (h *NarrativePageHtml) getDisqusUrl() string {
-	return h.p.Path() + "/"
+	return h.p.GetPath() + "/"
 }
 
 var imprint = `

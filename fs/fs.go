@@ -74,8 +74,8 @@ func (o *Output) writeNarrativePages() {
 }
 
 func (o *Output) writeThumbnailFor(p *comic.Page) string {
-	imgpath := config.PngDir() + p.ImageFilename()
-	outimgpath := config.PngDir() + "thumb_" + p.ImageFilename()
+	imgpath := config.PngDir() + p.GetImageFilename()
+	outimgpath := config.PngDir() + "thumb_" + p.GetImageFilename()
 	if _, err := os.Stat(outimgpath); os.IsNotExist(err) {
 		// open "test.jpg"
 		file, err := os.Open(imgpath)
@@ -145,7 +145,7 @@ func (o *Output) writeArchive() {
 	for _, p := range o.comic.GetPages() {
 		path := o.writeThumbnailFor(p)
 		b, w, h := o.getBase64FromPngFile(path)
-		list = append(list, fmt.Sprintf(`<li><a href="%s"><img src="data:image/png;base64,%s" width="%d" height="%d" alt="%s" title="%s"></a></li>`, p.Path(), b, w, h, p.Title(), p.Title()))
+		list = append(list, fmt.Sprintf(`<li><a href="%s"><img src="data:image/png;base64,%s" width="%d" height="%d" alt="%s" title="%s"></a></li>`, p.GetPath(), b, w, h, p.GetTitle(), p.GetTitle()))
 
 	}
 

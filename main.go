@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,23 +11,21 @@ import (
 	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
-	"github.com/ingmardrewing/gomic/content"
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/socmed"
 )
 
 func main() {
-
 	config.Read("/Users/drewing/Sites/gomic.yaml")
-
 	db.Init()
 
-	callApi()
+	pages := callPagesApi()
+	fmt.Println(pages)
+	//	rows := db.Query("SELECT * FROM pages order by pageNumber;")
+
+	//	comic := comic.NewComic(pages)
+
 	/*
-		rows := db.Query("SELECT * FROM pages order by pageNumber;")
-
-		comic := comic.NewComic(rows)
-
 		currentImageFiles := fs.ReadImageFilenames()
 		checkForNewPages(currentImageFiles, comic)
 		comic.ConnectPages()
@@ -59,38 +58,32 @@ func main() {
 */
 
 type Pages struct {
-	Pages []content.Page
+	Pages []comic.Page
 }
 
-var myClient = &http.Client{Timeout: 10 * time.Second}
-
-func getJson(url string, target interface{}) error {
-
+func callPagesApi() *Pages {
+	url := "https://drewing.eu:8443/0.1/gomic/page/"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	user, pass := config.GetBasicAuthUserAndPass()
 	req.SetBasicAuth(user, pass)
 
+	myClient := &http.Client{Timeout: 10 * time.Second}
 	resp, err := myClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return json.NewDecoder(resp.Body).Decode(target)
-}
-
-func callApi() {
-	p := new(Pages)
-	url := "https://drewing.eu:8443/0.1/gomic/page/"
-	err := getJson(url, p)
 	if err != nil {
 		panic(err)
 	}
-	log.Println(p)
+	defer resp.Body.Close()
+
+	p := new(Pages)
+	err = json.NewDecoder(resp.Body).Decode(p)
+	if err != nil {
+		panic(err)
+	}
+	return p
 }
 
 func checkForNewPages(filenames []string, c comic.Comic) {
@@ -102,8 +95,8 @@ func checkForNewPages(filenames []string, c comic.Comic) {
 			aws.UploadPage(p)
 			db.InsertPage(p)
 			c.AddPage(p)
-			log.Printf("new File with Path: %s\n", p.Path())
-			socmed.Prepare(p.Path(), p.Title(), p.ImgUrl(), p.ProdUrl(), p.Description())
+			log.Printf("new File with Path: %s\n", p.GetPath())
+			socmed.Prepare(p.GetPath(), p.GetTitle(), p.GetImgUrl(), p.GetProdUrl(), p.GetDescription())
 		}
 	}
 }

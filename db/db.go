@@ -32,7 +32,7 @@ func Query(query string) *sql.Rows {
 }
 
 func InsertPage(p *comic.Page) {
-	ins := fmt.Sprintf("INSERT INTO pages (title, path, imgUrl, disqusId, act) VALUES('%s', '%s', '%s', '%s', '%s');\n", p.Title(), p.FSPath(), p.ImgUrl(), p.DisqusId(), "Act III")
+	ins := fmt.Sprintf("INSERT INTO pages (title, path, imgUrl, disqusId, act) VALUES('%s', '%s', '%s', '%s', '%s');\n", p.GetTitle(), p.FSPath(), p.GetImgUrl(), p.GetDisqusId(), "Act III")
 	_, err := db.Exec(ins)
 	if err != nil {
 		panic(err.Error())

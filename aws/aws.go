@@ -11,7 +11,7 @@ import (
 )
 
 type AwsPage interface {
-	ImageFilename() string
+	GetImageFilename() string
 }
 
 func UploadPage(p AwsPage) {
@@ -25,14 +25,14 @@ func UploadPage(p AwsPage) {
 }
 
 func getThumbnailPaths(p AwsPage) (string, string) {
-	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.ImageFilename())
-	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.ImageFilename())
+	localPathToThumbnail := fmt.Sprintf("%sthumb_%s", config.PngDir(), p.GetImageFilename())
+	remotePathToThumbnail := fmt.Sprintf("%s/thumb_%s", config.AwsDir(), p.GetImageFilename())
 	return localPathToThumbnail, remotePathToThumbnail
 }
 
 func getFilePaths(p AwsPage) (string, string) {
-	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.ImageFilename())
-	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.ImageFilename())
+	localPathToFile := fmt.Sprintf("%s%s", config.PngDir(), p.GetImageFilename())
+	remotePathToFile := fmt.Sprintf("%s/%s", config.AwsDir(), p.GetImageFilename())
 	return localPathToFile, remotePathToFile
 }
 

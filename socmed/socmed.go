@@ -46,11 +46,11 @@ func Publish(c *comic.Comic) {
 
 func prepareFromComic(c *comic.Comic) {
 	lastPage := c.Get10LastComicPagesNewestFirst()[10]
-	title = lastPage.Title()
-	path = lastPage.Path()
-	imgurl = lastPage.ImgUrl()
-	prodUrl = lastPage.ProdUrl()
-	description = lastPage.Description()
+	title = lastPage.GetTitle()
+	path = lastPage.GetPath()
+	imgurl = lastPage.GetImgUrl()
+	prodUrl = lastPage.GetProdUrl()
+	description = lastPage.GetDescription()
 }
 
 func notPrepared() bool {
