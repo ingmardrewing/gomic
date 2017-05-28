@@ -10,9 +10,9 @@ import (
 	"github.com/ingmardrewing/gomic/aws"
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
+	"github.com/ingmardrewing/gomic/content"
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/socmed"
-	"github.com/ingmardrewing/gomicPages/content"
 )
 
 func main() {
