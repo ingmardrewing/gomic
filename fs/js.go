@@ -13,7 +13,7 @@ func newJs() *jsGen {
 }
 
 func (j *jsGen) getJs() string {
-	return js
+	return fmt.Sprintf(js, cookiebar+newsletter)
 }
 
 func (j *jsGen) getAnalytics() string {
@@ -26,6 +26,20 @@ func (j *jsGen) getAnalytics() string {
 func (j *jsGen) getDisqus(title string, disqusUrl string, disqusId string) string {
 	return fmt.Sprintf(disqus_js, title, disqusUrl, disqusId)
 }
+
+var newsletter = `
+$('#formContainer').staticFormHandler({
+	  name: "devabodeNewsletterOffer",
+	  fields: {
+		"Email": {
+		  "type":"input"
+		}
+	  },
+	  url: "https://drewing.eu:16443/0.1/gomic/newsletter/add/",
+	  display_condition: function(){ return $(window).scrollTop() > 100; },
+	  container: "#formContainer"
+});
+`
 
 var analytics = `
 
@@ -76,7 +90,146 @@ s.setAttribute('data-timestamp', +new Date());
 `
 
 var js = `
+(function($){
+  $.fn.staticFormHandler = function(options){
+
+    var defaults = {
+        name: 'staticFormHandler',
+        fields:{},
+        url:"",
+        confirmation_txt:"Thanks!",
+        error_txt:"Sorry, couldn't connect to the server. If you try again later, it might work.",
+        display_condition:function(){ return false; },
+        container:"#formContainer",
+        ask_only_once: true
+      },
+      plugin = this;
+
+    this.opt = function(field){
+      return options[field] || defaults[field];
+    };
+
+    this.createForm = function(){
+      var $f = $("<form action="+ plugin.opt("action") + ">")
+      $f.append(plugin.getFormFields());
+      return $f;
+    };
+
+    this.readCookie = function(){
+      c = document.cookie.split('; ');
+      var i = c.length-1;
+      while (i --> 0){
+        var C = c[i].split('=');
+        if(C[0] === plugin.opt('name')){
+          return C[1];
+        }
+      }
+    };
+
+    this.getCookieExpireDate = function(){
+      var now = new Date();
+      var expDate = new Date();
+      expDate.setYear(now.getFullYear()+20);
+      return expDate.toString();
+    };
+
+    this.setCookie = function(){
+      //document.cookie = plugin.opt('name')+"=seen;expires=" + plugin.getCookieExpireDate();
+    };
+
+    this.alreadySeen = function(){
+      return this.readCookie() === 'seen';
+    };
+
+    this.getInputField = function(f, c){
+       return '<div><label for="'+f+'"></label><input type="text" name="'+f+'" value="" id="'+f+'"></div>';
+    };
+
+    this.getSendButton = function(){
+       var $btn = $('<a href="." style="border: 1px solid black; padding:5px; margin-top:5px;"> send </a>');
+      $btn.click(plugin.sendData);
+       return $btn;
+    };
+
+    this.getFormFields = function(){
+      var fields = plugin.opt("fields"),
+          fields_html = "";
+      for( var f in fields){
+        switch(fields[f].type){
+          case "input":
+            fields_html += plugin.getInputField(f, fields[f]);
+            break;
+        }
+      }
+
+      return $(fields_html).append(plugin.getSendButton());
+    };
+
+    this.clearInterval = function(){
+      if( typeof(plugin.ti) !== 'undefined'){
+        clearInterval(plugin.ti);
+      }
+    };
+
+    this.getTriggerFunction = function(){
+      return function(){
+        if(plugin.opt('display_condition')()) {
+          plugin.showForm();
+          plugin.setCookie();
+          plugin.clearInterval();
+        }
+      };
+    };
+
+    this.gatherData = function() {
+      var fields = plugin.opt("fields"),
+          data = {};
+      for( var f in fields){
+        console.log($(f));
+        data[f] = $("#" + f).val();
+      }
+      return JSON.stringify(data);
+    };
+
+    this.onAjaxError = function (err){
+      console.log(err);
+    };
+
+    this.onAjaxSuccess = function (data) {
+      console.log(data);
+    };
+
+    this.sendData = function (){
+       $.ajax({
+        method: "PUT",
+        url: plugin.opt('url'),
+        data: plugin.gatherData(),
+        dataType: "json",
+        contentType: "application/json",
+        error: plugin.onAjaxError,
+        success: plugin.onAjaxSuccess
+      });
+      return false;
+    };
+
+    this.showForm = function(){
+      this.each(function(){
+        $(this).append( plugin.createForm());
+      });
+    };
+
+    if( ! plugin.alreadySeen() ){
+      plugin.ti = setInterval(plugin.getTriggerFunction(), 100);
+    }
+  };
+})(jQuery);
+
 jQuery(document).ready(function() {
+%s
+});
+`
+
+var cookiebar = `
 	function cli_show_cookiebar(p) {
 		var Cookie = {
 			set: function(name,value,days) {
@@ -245,8 +398,8 @@ jQuery(document).ready(function() {
 
 	function l1hs(str){if(str.charAt(0)=="#"){str=str.substring(1,str.length);}else{return "#"+str;}return l1hs(str);}
 
-				cli_show_cookiebar({
+cli_show_cookiebar({
 					settings: '{"animate_speed_hide":"500","animate_speed_show":"500","background":"#fff","border":"#444","border_on":true,"button_1_button_colour":"#000","button_1_button_hover":"#000000","button_1_link_colour":"#fff","button_1_as_button":true,"button_2_button_colour":"#333","button_2_button_hover":"#292929","button_2_link_colour":"#444","button_2_as_button":false,"font_family":"inherit","header_fix":false,"notify_animate_hide":true,"notify_animate_show":false,"notify_div_id":"#cookie-law-info-bar","notify_position_horizontal":"right","notify_position_vertical":"bottom","scroll_close":false,"scroll_close_reload":false,"showagain_tab":false,"showagain_background":"#fff","showagain_border":"#000","showagain_div_id":"#cookie-law-info-again","showagain_x_position":"100px","text":"#000","show_once_yn":false,"show_once":"10000"}'
-				});
-			});
+});
+
 `
