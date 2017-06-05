@@ -28,7 +28,7 @@ func (j *jsGen) getDisqus(title string, disqusUrl string, disqusId string) strin
 }
 
 var newsletter = `
-$('#formContainer').staticFormHandler({
+$('.nl_container').staticFormHandler({
 	  name: "devabodeNewsletterOffer",
 	  fields: {
 		"Email": {
@@ -37,12 +37,10 @@ $('#formContainer').staticFormHandler({
 	  },
 	  url: "https://drewing.eu:16443/0.1/gomic/newsletter/add/",
 	  display_condition: function(){ return $(window).scrollTop() > 100; },
-	  container: "#formContainer"
 });
 `
 
 var analytics = `
-
 <script type="text/javascript">
 //<![CDATA[
 var gaProperty = 'UUA-49679648-1';
@@ -97,10 +95,9 @@ var js = `
         name: 'staticFormHandler',
         fields:{},
         url:"",
-        confirmation_txt:"Thanks!",
+        confirmation_txt:"Thank you! You are almost ready - just click on the confirmation link sent to you via e-mail.",
         error_txt:"Sorry, couldn't connect to the server. If you try again later, it might work.",
         display_condition:function(){ return false; },
-        container:"#formContainer",
         ask_only_once: true
       },
       plugin = this;
@@ -146,8 +143,14 @@ var js = `
     };
 
     this.getSendButton = function(){
-       var $btn = $('<a href="." style="border: 1px solid black; padding:5px; margin-top:5px;"> send </a>');
+       var $btn = $('<a href="#" style="border: 1px solid black; padding:5px; margin-top:5px;">Yes, sign me up!</a>');
       $btn.click(plugin.sendData);
+       return $btn;
+    };
+
+    this.getDeclineButton = function(){
+       var $btn = $('<a href="#" style="border: 1px solid black; padding:5px; margin-top:5px;">No, thanks.</a>');
+      $btn.click(plugin.decline);
        return $btn;
     };
 
@@ -162,7 +165,7 @@ var js = `
         }
       }
 
-      return $(fields_html).append(plugin.getSendButton());
+      return $(fields_html).append(plugin.getDeclineButton()).append(plugin.getSendButton());
     };
 
     this.clearInterval = function(){
@@ -185,7 +188,6 @@ var js = `
       var fields = plugin.opt("fields"),
           data = {};
       for( var f in fields){
-        console.log($(f));
         data[f] = $("#" + f).val();
       }
       return JSON.stringify(data);
@@ -197,6 +199,7 @@ var js = `
 
     this.onAjaxSuccess = function (data) {
       console.log(data);
+	  plugin.opt('confirmation')
     };
 
     this.sendData = function (){
@@ -213,8 +216,16 @@ var js = `
     };
 
     this.showForm = function(){
-      this.each(function(){
+      plugin.each(function(){
+        $(this).removeClass('nl_container_hidden');
         $(this).append( plugin.createForm());
+      });
+    };
+
+    this.decline = function(){
+      plugin.each(function(){
+        $(this).addClass('nl_container_hidden');
+        $(this).find('form').remove();
       });
     };
 

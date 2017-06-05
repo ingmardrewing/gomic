@@ -332,6 +332,7 @@ func (html *HTML) getFooterNavi() string {
 
 	js := newJs()
 	h += js.getAnalytics()
+	h += `<div class="nl_container nl_container_hidden"></div>`
 	return h
 }
 

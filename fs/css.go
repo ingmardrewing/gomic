@@ -49,6 +49,7 @@ header .home {
 	margin-top: 0;
     background-color: transparent;
 }
+
 header .orange {
 	display: block;
     height: 2.2em;
@@ -128,6 +129,7 @@ nav a {
 	background-color: white;
 	border: 1px solid black;
 }
+
 #cookie-law-info-again {
 	font-size: 10pt;
 	margin: 0;
@@ -136,9 +138,11 @@ nav a {
 	z-index: 9999;
 	cursor: pointer;
 }
+
 #cookie-law-info-bar span {
 	vertical-align: middle;
 }
+
 /** Buttons (http://papermashup.com/demos/css-buttons) */
 .cli-plugin-button, .cli-plugin-button:visited {
 	display: inline-block;
@@ -156,16 +160,20 @@ nav a {
 	cursor: pointer;
 	margin: auto 10px;
 }
+
 .cli-plugin-button:hover {
 	background-color: #111;
 	color: #fff;
 }
+
 .cli-plugin-button:active {
 	top: 1px;
 }
+
 .small.cli-plugin-button, .small.cli-plugin-button:visited {
 	font-size: 11px;
 }
+
 .cli-plugin-button, .cli-plugin-button:visited,
 	.medium.cli-plugin-button, .medium.cli-plugin-button:visited {
 	font-size: 13px;
@@ -173,49 +181,75 @@ nav a {
 	line-height: 1;
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 }
+
 .large.cli-plugin-button, .large.cli-plugin-button:visited {
 	font-size: 14px;
 	padding: 8px 14px 9px;
 }
+
 .super.cli-plugin-button, .super.cli-plugin-button:visited {
 	font-size: 34px;
 	padding: 8px 14px 9px;
 }
+
 .pink.cli-plugin-button, .magenta.cli-plugin-button:visited {
 	background-color: #e22092;
 }
+
 .pink.cli-plugin-button:hover {
 	background-color: #c81e82;
 }
+
 .green.cli-plugin-button, .green.cli-plugin-button:visited {
 	background-color: #91bd09;
 }
+
 .green.cli-plugin-button:hover {
 	background-color: #749a02;
 }
+
 .red.cli-plugin-button, .red.cli-plugin-button:visited {
 	background-color: #e62727;
 }
+
 .red.cli-plugin-button:hover {
 	background-color: #cf2525;
 }
+
 .orange.cli-plugin-button, .orange.cli-plugin-button:visited {
 	background-color: #ff5c00;
 }
+
 .orange.cli-plugin-button:hover {
 	background-color: #d45500;
 }
+
 .blue.cli-plugin-button, .blue.cli-plugin-button:visited {
 	background-color: #2981e4;
 }
+
 .blue.cli-plugin-button:hover {
 	background-color: #2575cf;
 }
+
 .yellow.cli-plugin-button, .yellow.cli-plugin-button:visited {
 	background-color: #ffb515;
 }
+
 .yellow.cli-plugin-button:hover {
 	background-color: #fc9200;
 }
 
+.nl_container {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: red;
+}
+
+.nl_container_hidden {
+	display: none;
+}
 `

@@ -17,6 +17,7 @@ import (
 	"github.com/ingmardrewing/gomic/db"
 	"github.com/ingmardrewing/gomic/fs"
 	"github.com/ingmardrewing/gomic/socmed"
+	"github.com/ingmardrewing/gomic/strato"
 )
 
 func main() {
@@ -24,31 +25,30 @@ func main() {
 	db.Init()
 
 	pages := callPagesApi()
+	log.Println(pages)
 	imageFiles := fs.ReadImageFilenames()
 	newPages := checkForNewPages(imageFiles, pages.Pages)
 	storeNewPages(newPages)
 	pages.Pages = append(pages.Pages, newPages...)
 	fmt.Println(newPages)
 
-	/*
-		comic := comic.NewComic(pages.Pages)
+	comic := comic.NewComic(pages.Pages)
+	comic.ConnectPages()
 
-		comic.ConnectPages()
+	output := fs.NewOutput(&comic)
+	output.WriteToFilesystem()
 
-		output := fs.NewOutput(&comic)
-		output.WriteToFilesystem()
-
-		if config.IsTest() {
-			strato.UploadTest()
-		} else if config.IsProd() {
-			strato.UploadProd()
-			socmed.Publish(&comic)
-		}
-	*/
+	if config.IsTest() {
+		strato.UploadTest()
+	} else if config.IsProd() {
+		strato.UploadProd()
+		socmed.Publish(&comic)
+	}
 }
 
 func callPagesApi() *comic.Pages {
 	url := "https://drewing.eu:8443/0.1/gomic/page/"
+	log.Printf("callPagesApi with %s\n", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)
