@@ -246,10 +246,59 @@ nav a {
 	top: 0;
 	width: 100%;
 	height: 100%;
-	background-color: red;
+	background-color: white;
+	text-align: left;
+}
+
+.nl_container h3:first-child {
+	margin-top: 0;
+}
+
+.nl_text_container {
+	background: url(https://devabo.de/imgs/header_devabo_de.png) no-repeat 0 0 ;
+	box-sizing: border-box;
+	padding: 80px 0 0 0;
+	margin: 0 auto;
+	width: 800px;
+	height: 100%;
+}
+
+.nl_button {
+	border: 1px solid black;
+	padding:5px;
+	margin-top:5px;
+	display: inline-block;
+	text-decoration: none;
+	color: black;
+	font-family: Arial Black;
+	text-transform: uppercase;
+}
+
+.nl_button + .nl_button {
+	margin-left: 10px;
+}
+
+.nl_field {
+	display: block;
+	margin-bottom: 30px;
+}
+
+.nl_error {
+	color: red;
+}
+
+.nl_field label:before{
+	content:"Your E-mail address:";
+}
+
+.nl_field input {
+	border: 1px solid black;
+	padding: 5px;
+	margin-left: 10px;
 }
 
 .nl_container_hidden {
 	display: none;
 }
+
 `

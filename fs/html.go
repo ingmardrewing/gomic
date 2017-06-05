@@ -178,6 +178,7 @@ type htmlDocWrapperI interface {
 	AddFooterNavi(txt string)
 	AddNameValueMetas(mataData []string)
 	AddCookieLawInfo()
+	AddNewsletter()
 	Init()
 }
 
@@ -238,6 +239,12 @@ func (hdw *htmlDocWrapper) AddCookieLawInfo() {
 func (hdw *htmlDocWrapper) AddFooterNavi(navi string) {
 	n := createNode("footer")
 	n.AppendTag("nav").AppendText(navi)
+	hdw.htmlDoc.AddToBody(n)
+}
+
+func (hdw *htmlDocWrapper) AddNewsletter() {
+	n := createNode("div")
+	n.Attr("class", "nl_container nl_container_hidden")
 	hdw.htmlDoc.AddToBody(n)
 }
 
@@ -332,7 +339,6 @@ func (html *HTML) getFooterNavi() string {
 
 	js := newJs()
 	h += js.getAnalytics()
-	h += `<div class="nl_container nl_container_hidden"></div>`
 	return h
 }
 
@@ -424,6 +430,7 @@ func (ah *DataHtml) writePage(title string) string {
 	hdw.AddCookieLawInfo()
 
 	hdw.AddFooterNavi(ah.getFooterNavi())
+	hdw.AddNewsletter()
 
 	return hdw.Render()
 }
@@ -469,6 +476,7 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddCookieLawInfo()
 
 	hdw.AddFooterNavi(h.getFooterNavi())
+	hdw.AddNewsletter()
 
 	desc := h.p.GetDescription()
 	if len(desc) == 0 {

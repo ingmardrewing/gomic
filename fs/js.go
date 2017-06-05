@@ -36,7 +36,7 @@ $('.nl_container').staticFormHandler({
 		}
 	  },
 	  url: "https://drewing.eu:16443/0.1/gomic/newsletter/add/",
-	  display_condition: function(){ return $(window).scrollTop() > 100; },
+	  display_condition: function(){ return $(window).scrollTop() > 200; },
 });
 `
 
@@ -95,7 +95,8 @@ var js = `
         name: 'staticFormHandler',
         fields:{},
         url:"",
-        confirmation_txt:"Thank you! You are almost ready - just click on the confirmation link sent to you via e-mail.",
+		intro_txt: "<h3>Want to get new pages via e-mail?</h3><p>Sign up to receive new DevAbo.de-pages via e-mail:<br>Just enter your e-mail address in the field below and click on &bdquo;Yes, sign me up&ldquo;.</p>",
+        confirmation_txt:"<p>Thank you! You are almost ready - just click on the confirmation link sent to you via e-mail.</p>",
         error_txt:"Sorry, couldn't connect to the server. If you try again later, it might work.",
         display_condition:function(){ return false; },
         ask_only_once: true
@@ -108,7 +109,10 @@ var js = `
 
     this.createForm = function(){
       var $f = $("<form action="+ plugin.opt("action") + ">")
+	  $f.append(plugin.opt('intro_txt'));
       $f.append(plugin.getFormFields());
+	  $f.append(plugin.getDeclineButton());
+	  $f.append(plugin.getSendButton());
       return $f;
     };
 
@@ -131,7 +135,7 @@ var js = `
     };
 
     this.setCookie = function(){
-      //document.cookie = plugin.opt('name')+"=seen;expires=" + plugin.getCookieExpireDate();
+      document.cookie = plugin.opt('name')+"=seen;expires=" + plugin.getCookieExpireDate();
     };
 
     this.alreadySeen = function(){
@@ -139,18 +143,24 @@ var js = `
     };
 
     this.getInputField = function(f, c){
-       return '<div><label for="'+f+'"></label><input type="text" name="'+f+'" value="" id="'+f+'"></div>';
+       return '<div class="nl_field"><label for="'+f+'"></label><input type="text" name="'+f+'" value="" id="'+f+'"></div>';
     };
 
     this.getSendButton = function(){
-       var $btn = $('<a href="#" style="border: 1px solid black; padding:5px; margin-top:5px;">Yes, sign me up!</a>');
+       var $btn = $('<a href="#" class="nl_button">Yes, sign me up!</a>');
       $btn.click(plugin.sendData);
        return $btn;
     };
 
     this.getDeclineButton = function(){
-       var $btn = $('<a href="#" style="border: 1px solid black; padding:5px; margin-top:5px;">No, thanks.</a>');
-      $btn.click(plugin.decline);
+       var $btn = $('<a href="#" class="nl_button">No, thanks.</a>');
+      $btn.click(plugin.close);
+       return $btn;
+    };
+
+    this.getOkayCloseButton = function(){
+       var $btn = $('<a href="#" class="nl_button">Okay</a>');
+      $btn.click(plugin.close);
        return $btn;
     };
 
@@ -160,12 +170,12 @@ var js = `
       for( var f in fields){
         switch(fields[f].type){
           case "input":
-            fields_html += plugin.getInputField(f, fields[f]);
+            fields_html +=  plugin.getInputField(f, fields[f]);
             break;
         }
       }
 
-      return $(fields_html).append(plugin.getDeclineButton()).append(plugin.getSendButton());
+      return $(fields_html);
     };
 
     this.clearInterval = function(){
@@ -194,19 +204,41 @@ var js = `
     };
 
     this.onAjaxError = function (err){
-      console.log(err);
+		plugin.each(function(){
+			  $(this).find('.nl_error').remove();
+			  $(this).find('.nl_text_container').prepend('<p class="nl_error">Please enter a valid e-mail address.</p>');
+		  }) ;
     };
 
     this.onAjaxSuccess = function (data) {
-      console.log(data);
-	  plugin.opt('confirmation')
+	  if( data.Text === "address already registered"){
+		plugin.each(function(){
+			  $(this).find('.nl_error').remove();
+			  $(this).find('.nl_text_container').prepend('<p class="nl_error">This e-mail address is already registered.</p>');
+		  }) ;
+	  }
+	  else if( data.Text === "no address given"){
+		plugin.each(function(){
+			  $(this).find('.nl_error').remove();
+			  $(this).find('.nl_text_container').prepend('<p class="nl_error">Please enter a valid e-mail address.</p>');
+		  }) ;
+	  }
+	  else {
+		  plugin.each(function(){
+			  $c = $(this).find('.nl_text_container')
+			  $c.children().remove();
+			  $c.append( plugin.opt('confirmation_txt'));
+			  $c.append(plugin.getOkayCloseButton());
+		  }) ;
+	  }
     };
 
     this.sendData = function (){
+		var data =  plugin.gatherData();
        $.ajax({
         method: "PUT",
         url: plugin.opt('url'),
-        data: plugin.gatherData(),
+        data: data,
         dataType: "json",
         contentType: "application/json",
         error: plugin.onAjaxError,
@@ -218,14 +250,16 @@ var js = `
     this.showForm = function(){
       plugin.each(function(){
         $(this).removeClass('nl_container_hidden');
-        $(this).append( plugin.createForm());
+		$c = $('<div class="nl_text_container">');
+        $c.append( plugin.createForm());
+		$(this).append($c);
       });
     };
 
-    this.decline = function(){
+    this.close= function(){
       plugin.each(function(){
         $(this).addClass('nl_container_hidden');
-        $(this).find('form').remove();
+        $(this).children().remove();
       });
     };
 
@@ -356,7 +390,6 @@ var cookiebar = `
 			return false;
 		});
 		jQuery("#cookie_action_close_header").click(function(e) {
-			console.log('cookie_action_close_header clicked');
 			e.preventDefault();
 			accept_close();
 		});
