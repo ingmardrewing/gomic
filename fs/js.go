@@ -139,7 +139,8 @@ var js = `
     };
 
     this.alreadySeen = function(){
-      return this.readCookie() === 'seen';
+		return true;
+      //return this.readCookie() === 'seen';
     };
 
     this.getInputField = function(f, c){

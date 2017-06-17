@@ -30,13 +30,13 @@ func Publish(c *comic.Comic) {
 	user, pass := config.GetBasicAuthUserAndPass()
 	content := getPublishableConted()
 
-	log.Printf(`curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '%s' -u %s:'%s' https://drewing.eu:443/0.1/gomic/socmed/publish`, content, user, pass)
+	log.Printf(`curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '%s' -u %s:'%s' https://drewing.eu:443/0.1/gomic/socmed/all/publish`, content, user, pass)
 
 	/*
 		response, err := resty.R().
 			SetHeader("Content-Type", "application/json").
 			SetBody(getPublishableConted()).
-			Post("https://" + user + ":" + pass + "@drewing.eu/0.1/gomic/socmed/publish")
+			Post("https://" + user + ":" + pass + "@drewing.eu/0.1/gomic/socmed/all/publish")
 		if err != nil {
 			log.Println(err)
 		}
