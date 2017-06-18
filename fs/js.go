@@ -139,8 +139,7 @@ var js = `
     };
 
     this.alreadySeen = function(){
-		return true;
-      //return this.readCookie() === 'seen';
+      return this.readCookie() === 'seen';
     };
 
     this.getInputField = function(f, c){
