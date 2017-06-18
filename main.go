@@ -42,7 +42,9 @@ func main() {
 		strato.UploadTest()
 	} else if config.IsProd() {
 		strato.UploadProd()
-		socmed.Publish(&comic)
+		if len(newPages) > 0 {
+			socmed.Publish(&comic)
+		}
 	}
 }
 

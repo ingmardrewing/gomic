@@ -262,10 +262,6 @@ var js = `
         $(this).children().remove();
       });
     };
-
-    if( ! plugin.alreadySeen() ){
-      plugin.ti = setInterval(plugin.getTriggerFunction(), 100);
-    }
   };
 })(jQuery);
 
