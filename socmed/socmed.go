@@ -1,8 +1,10 @@
 package socmed
 
 import (
+	"bytes"
 	"fmt"
-	"log"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/ingmardrewing/gomic/comic"
 	"github.com/ingmardrewing/gomic/config"
@@ -28,20 +30,26 @@ func Publish(c *comic.Comic) {
 		prepareFromComic(c)
 	}
 	user, pass := config.GetBasicAuthUserAndPass()
-	content := getPublishableConted()
+	content := []byte(getPublishableConted())
 
-	log.Printf(`curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '%s' -u %s:'%s' https://drewing.eu:443/0.1/gomic/socmed/all/publish`, content, user, pass)
+	url := "https://drewing.eu:443/0.1/gomic/socmed/all/publish"
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(content))
+	req.SetBasicAuth(user, pass)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
-	/*
-		response, err := resty.R().
-			SetHeader("Content-Type", "application/json").
-			SetBody(getPublishableConted()).
-			Post("https://" + user + ":" + pass + "@drewing.eu/0.1/gomic/socmed/all/publish")
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(response)
-	*/
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("response status: ", resp.Status)
+	fmt.Println("response headers: ", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response body: ", body)
+
+	//log.Printf(`curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '%s' -u %s:'%s' https://drewing.eu:443/0.1/gomic/socmed/all/publish`, content, user, pass)
 }
 
 func prepareFromComic(c *comic.Comic) {
