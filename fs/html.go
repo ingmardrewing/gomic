@@ -478,14 +478,10 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddFooterNavi(h.getFooterNavi())
 	hdw.AddNewsletter()
 
-	desc := h.p.GetDescription()
-	if len(desc) == 0 {
-		desc = "A dystopian sci-fi webcomic about the life of software developers"
-	}
 	hdw.AddToHead(createNode("meta").Attr("property", "og:title").Attr("content", h.p.GetTitle()))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:url").Attr("content", h.p.GetPath()))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:image").Attr("content", h.p.GetImgUrl()))
-	hdw.AddToHead(createNode("meta").Attr("property", "og:description").Attr("content", desc))
+	hdw.AddToHead(createNode("meta").Attr("property", "og:description").Attr("content", h.p.GetDescription()))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:site_name").Attr("content", "DevAbo.de"))
 	hdw.AddToHead(createNode("meta").Attr("property", "og:type").Attr("content", "article"))
 	hdw.AddToHead(createNode("meta").Attr("property", "article:published_time").Attr("content", h.p.GetDateFromFSPath()))
@@ -494,13 +490,13 @@ func (h *NarrativePageHtml) writePage() string {
 	hdw.AddToHead(createNode("meta").Attr("property", "article:tag").Attr("content", "comic, graphic novel, webcomic, science-fiction, sci-fi"))
 
 	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("content", h.p.GetTitle()))
-	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("description", desc))
+	hdw.AddToHead(createNode("meta").Attr("itemprop", "name").Attr("description", h.p.GetDescription()))
 	hdw.AddToHead(createNode("meta").Attr("itemprop", "image").Attr("content", h.p.GetImgUrl()))
 
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:card").Attr("content", "summary_large_image"))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:site").Attr("content", "@devabo_de"))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:title").Attr("content", h.p.GetTitle()))
-	hdw.AddToHead(createNode("meta").Attr("name", "twitter:text:description").Attr("content", desc))
+	hdw.AddToHead(createNode("meta").Attr("name", "twitter:text:description").Attr("content", h.p.GetDescription()))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:creator").Attr("content", "@ingmardrewing"))
 	hdw.AddToHead(createNode("meta").Attr("name", "twitter:image").Attr("content", h.p.GetImgUrl()))
 

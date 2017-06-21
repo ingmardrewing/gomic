@@ -25,12 +25,13 @@ func main() {
 	db.Init()
 
 	pages := callPagesApi()
-	log.Println(pages)
 	imageFiles := fs.ReadImageFilenames()
 	newPages := checkForNewPages(imageFiles, pages.Pages)
 	storeNewPages(newPages)
 	pages.Pages = append(pages.Pages, newPages...)
-	fmt.Println(newPages)
+	if len(newPages) > 0 {
+		fmt.Println(newPages)
+	}
 
 	comic := comic.NewComic(pages.Pages)
 	comic.ConnectPages()
@@ -84,7 +85,6 @@ func checkForNewPages(filenames []string, knownPages []*comic.Page) []*comic.Pag
 			db.InsertPage(p)
 			newPages = append(newPages, p)
 			log.Printf("new File with Path: %s\n", p.GetPath())
-			socmed.Prepare(p.GetPath(), p.GetTitle(), p.GetImgUrl(), p.GetProdUrl(), p.GetDescription())
 		}
 	}
 	return newPages

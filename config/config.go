@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	yaml "gopkg.in/yaml.v2"
@@ -60,7 +59,6 @@ func Servedrootpath() string {
 
 func Pages() []map[string]string {
 	pgs := conf.Pages
-	log.Println(pgs)
 	return pgs
 }
 

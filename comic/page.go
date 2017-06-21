@@ -57,7 +57,7 @@ func getDisqusId(y int, m int, d int) string {
 	return disqusId
 }
 
-func getPageData(filename string) (string, string, string, string, string, string) {
+func getPageDataFromUser(filename string) (string, string, string, string, string, string) {
 	act := getUserInput("Enter act for " + filename + ": ")
 	title := getUserInput("Enter title for " + filename + ": ")
 	description := getUserInput("Enter description for " + filename + ": ")
@@ -69,7 +69,7 @@ func getPageData(filename string) (string, string, string, string, string, strin
 }
 
 func getPageFromFilenameAndUserInput(filename string) *Page {
-	act, title, path, disqusId, imgUrl, description := getPageData(filename)
+	act, title, path, disqusId, imgUrl, description := getPageDataFromUser(filename)
 	return &Page{0, 0, title, description, path, imgUrl, disqusId, act, nil, nil, nil, nil, [][]string{}, [][]string{}}
 }
 
@@ -138,7 +138,10 @@ func (p *Page) GetImgUrl() string {
 }
 
 func (p *Page) GetDescription() string {
-	return p.Description
+	if len(p.Description) > 0 {
+		return p.Description
+	}
+	return "DevAbo.de - a dystopian science fiction webcomic set in the far future"
 }
 
 func (p *Page) GetThumnailUrl() string {
